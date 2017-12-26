@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      github 블로그를 jekyll 를 통해 관리해보자 &middot; Tale
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/tale/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/tale/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/tale/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/tale/assets/apple-touch-icon.png">
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/tale/">
+          <h2 class="nav-title">Tale</h2>
+        </a>
+        <ul>
+          <li><a href="/tale/about">About</a></li>
+          <li><a href="/tale/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        Chester
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2017-12-26 00:00:00 +0900">December 26, 2017</time>
+    
+  </div>
+
+  <h1 class="post-title">github 블로그를 jekyll 를 통해 관리해보자</h1>
+  <div class="post-line"></div>
+
+  <h3 id="환경-centos7">환경 centos7</h3>
+
+<h4 id="1필수패키지-설치">1.필수패키지 설치</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">yum install gcc-c++ patch readline readline-devel zlib zlib-devel
+yum install libyaml-devel libffi-devel openssl-devel make
+yum install bzip2 autoconf automake libtool bison iconv-devel sqlite-devel</code></pre></figure>
+
+<h4 id="2rvm-설치">2.RVM 설치</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">curl -sSL https://rvm.io/mpapis.asc | gpg --import -
+curl -L get.rvm.io | bash -s stable
+source /etc/profile.d/rvm.sh
+rvm reload</code></pre></figure>
+
+<h4 id="3verify-dependencies">3.Verify Dependencies</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">rvm requirements run</code></pre></figure>
+
+<h4 id="4ruby-22-설치">4.ruby 2.2 설치</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">rvm install ruby-2.2.5</code></pre></figure>
+
+<h4 id="5기본-루비버전-설정">5.기본 루비버전 설정</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">rvm use 2.2.5 --default</code></pre></figure>
+
+<h4 id="6루비-버전체크">6.루비 버전체크</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">ruby --version
+
+ruby 2.2.5p319 (2016-04-26 revision 54774) <span class="p">[</span><span class="nv">x86_64-linux</span><span class="p">]</span></code></pre></figure>
+
+<h4 id="7파이썬-nodejs-설치">7.파이썬, nodejs 설치</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">yum install -y python nodejs</code></pre></figure>
+
+<h4 id="8jekyll-설치및-talegit-clone">8.jekyll 설치및 tale.git clone</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">gem install jekyll
+gem install bundler
+cd /home
+git clone https://github.com/chesterhow/tale.git</code></pre></figure>
+
+<h4 id="9추가플러그인다운로드">9.추가플러그인다운로드</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">cd /home/tale
+gem install jekyll-paginate</code></pre></figure>
+
+<h4 id="10실행">10.실행</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">jekyll serve -w -H 1.123.123.123<span class="sb">
+
+
+</span>Configuration file: /home/tale/_config.yml
+            Source: /home/tale
+       Destination: /home/tale/_site
+ Incremental build: disabled. Enable with --incremental
+      Generating...
+                    done in 0.767 seconds.
+ Auto-regeneration: enabled for '/home/tale'
+    Server address: http://1.123.123.123:4000/tale/
+  Server running... press ctrl-c to stop.<span class="sb">
+
+
+</span>여기서 -w 옵션을 주면 
+/home/tale/_posts/<span class="err">*</span>.md 파일이 변경될때마다 바로바로 웹페이지에 적용되는것을 확인할수있다.</code></pre></figure>
+
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/tale/2017-12-26/innodb-buffer-pull" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/tale/2017-11-02/puppeteer-non-zero-exit-code" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; <time datetime="2017-12-26 17:00:20 +0900">2017</time> Chester How. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+      </span>
+    </footer>
+  </body>
+</html>

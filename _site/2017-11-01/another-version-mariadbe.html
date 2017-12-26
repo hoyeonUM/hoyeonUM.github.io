@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      mysql 을 두개 설치해보자 &middot; Tale
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/tale/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/tale/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/tale/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/tale/assets/apple-touch-icon.png">
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/tale/">
+          <h2 class="nav-title">Tale</h2>
+        </a>
+        <ul>
+          <li><a href="/tale/about">About</a></li>
+          <li><a href="/tale/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        Chester
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2017-11-01 00:00:00 +0900">November 01, 2017</time>
+    
+  </div>
+
+  <h1 class="post-title">mysql 을 두개 설치해보자</h1>
+  <div class="post-line"></div>
+
+  <p>현재 mysql5.5 -&gt; maria10.2 설치하기에 앞서 리눅스 피시에 maria10.2 설치를 해야하는 상황이 왔다.
+다른 가상서버 혹은 docker 로 설치진행해도 되지만 옮겨야하는 데이터디렉토리 용량이 800g가 넘기때문에 그냥 리눅스 피시에 설치를 진행하도록 하겠다.</p>
+
+<p>소스코드 설치로 진행한다.</p>
+
+<h4 id="1컴파일을-하기위한-라이브러리-설치">1.컴파일을 하기위한 라이브러리 설치</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">yum install cmake ncurses ncurses-devel bison gcc gcc-c++ -y</code></pre></figure>
+
+<h4 id="2source-code-를-다운로드한다">2.source code 를 다운로드한다.</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">cd /usr/local/src
+wget -N https://downloads.mariadb.org/interstitial/mariadb-10.2.7/source/mariadb-10.2.7.tar.gz
+tar zxvf mariadb-10.2.7.tar.gz
+mkdir build
+cd build</code></pre></figure>
+
+<h4 id="3compile">3.compile</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown"> cmake ../mariadb-10.2.7 -DWITH_READLINE=1 -DWITH_READLINE=1 -DWITH_SSL=bundled -DWITH_ZLIB=system -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DENABLED_LOCAL_INFILE=1 -DWITH_EXTRA_CHARSETS=all -DWITH_ARIA_STORAGE_ENGINE=1 -DWITH_XTRADB_STORAGE_ENGINE=1 -DWITH_ARCHIVE_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_PARTITION_STORAGE_ENGINE=1 -DWITH_BLACKHOLE_STORAGE_ENGINE=1 -DWITH_FEDERATEDX_STORAGE_ENGINE=1 -DWITH_PERFSCHEMA_STORAGE_ENGINE=1 -DCMAKE_INSTALL_PREFIX=/usr/local/mariadb-10.2.7 -DMYSQL_DATADIR=/disk/mysql10.2.7</code></pre></figure>
+
+<h4 id="4setup">4.setup</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">make ; make install </code></pre></figure>
+
+<h4 id="5설정파일-복사">5.설정파일 복사</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">cp /usr/local/mariadb-10.2.7/support-files/my-innodb-heavy-4G.cnf /etc/sql.cnf</code></pre></figure>
+
+<h4 id="6계정추가는전버전에서--이미-만들었으므로-생략">6.계정추가는전버전에서  이미 만들었으므로 생략</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">adduser mysql</code></pre></figure>
+
+<h4 id="7alias-설정">7.alias 설정</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">alias maria10.2start='/usr/local/mariadb-10.2.7/bin/mysqld_safe --defaults-file=/etc/sql.cnf &amp;'
+alias maria10.2='mysql --defaults-file=/etc/sql.cnf -uroot -p'</code></pre></figure>
+
+<h4 id="8바로적용">8.바로적용</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">source ~/.bashrc</code></pre></figure>
+
+<h4 id="참조링크--centos-64bit-mariadb-10-소스-컴파일-설치하기">참조링크 : <a href="http://88oy.tistory.com/383">CentOS 64Bit MariaDB 10 소스 컴파일 설치하기</a></h4>
+
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/tale/2017-11-02/puppeteer-non-zero-exit-code" class="left arrow">&#8592;</a>
+  
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; <time datetime="2017-12-26 17:00:20 +0900">2017</time> Chester How. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+      </span>
+    </footer>
+  </body>
+</html>

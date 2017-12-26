@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      puppeteer the Node.js process with a non-zero exit code &middot; Tale
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/tale/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/tale/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/tale/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/tale/assets/apple-touch-icon.png">
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/tale/">
+          <h2 class="nav-title">Tale</h2>
+        </a>
+        <ul>
+          <li><a href="/tale/about">About</a></li>
+          <li><a href="/tale/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        Chester
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2017-11-02 00:00:00 +0900">November 02, 2017</time>
+    
+  </div>
+
+  <h1 class="post-title">puppeteer the Node.js process with a non-zero exit code</h1>
+  <div class="post-line"></div>
+
+  <p>Lazy loading 싸이트를 긁어오기위해 요즘 핫하다는 puppeteer 를 사용해보고자 설치했다.
+내 개발환경은 현재 윈도우와 리눅스 혹은 vagrant 등 여러환경을 가지고있지만, 프로젝트가 윈도우에 설치되어있어서 윈도우로 개발시작</p>
+
+<p>윈도우에 잘 설치한 이후 테스트를 끝낸이후 QA 서버 (centos) 환경에 배포완료.</p>
+
+<p><code class="highlighter-rouge">puppeteer the Node.js process with a non-zero exit code.</code> 와 같은 오류코드가 나온다.</p>
+
+<p><code class="highlighter-rouge">./node_modules/puppeteer/.local-chromium/linux-508693/chrome-linux/chrome -v --headless --no-sandbox --disable-setuid-sandbox</code> 실행명령어는 다음과 같다.</p>
+
+<p>찾아본 결과 다음과 같이 처리.</p>
+
+<ol>
+  <li>
+    <p><code class="highlighter-rouge">yum install -y nss</code></p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">yum install ipa-gothic-fonts xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-utils xorg-x11-fonts-cyrillic xorg-x11-fonts-Type1 xorg-x11-fonts-misc -y</code></p>
+  </li>
+  <li>
+    <p><code class="highlighter-rouge">yum install pango.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXtst.x86_64 cups-libs.x86_64 libXScrnSaver.x86_64 libXrandr.x86_64 GConf2.x86_64 alsa-lib.x86_64 atk.x86_64 gtk3.x86_64 -y</code></p>
+  </li>
+</ol>
+
+<p>무슨 설치가 이렇게 많이빠져있는지는 모르겠지만 정상동작확인완료.</p>
+
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/tale/2017-12-26/github-page-jekyll-setup" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/tale/2017-11-01/another-version-mariadbe" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; <time datetime="2017-12-26 17:00:20 +0900">2017</time> Chester How. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+      </span>
+    </footer>
+  </body>
+</html>
