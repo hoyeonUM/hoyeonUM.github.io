@@ -4,8 +4,10 @@ title: "mariadb 에서 connected by 를 써보자!"
 author: "Chester"
 ---
 
-oracle 에서 사용할수있는 connected by 가 mariadb 10.2 버전이후로부터는 지원된다.
-####1. 테이블 생성
+##### oracle 에서 사용할수있는 connect by 가 mariadb 10.2 버전이후로부터는 아래와 같이 지원된다.
+
+
+#### 1. 테이블 생성
 {% highlight markdown %}
 CREATE TABLE `menu` (
   `idx` int(11) NOT NULL AUTO_INCREMENT,
@@ -16,8 +18,6 @@ CREATE TABLE `menu` (
   CONSTRAINT `menu_menu_idx_fk` FOREIGN KEY (`parents_idx`) REFERENCES `menu` (`idx`)
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4
 {% endhighlight %}
-
-소스코드 설치로 진행한다.
 
 #### 2. 데이터 넣기
 {% highlight markdown %}
@@ -53,7 +53,7 @@ where parents_idx is null
 select idx,ifnull( parents_idx, 0) as pidx,name, level from cte
 ;
 {% endhighlight %}
-
+##### 첫번째 에서는 재귀 대상이 될 대상을 조회한이후 다음 union 절에서는 재귀 쿼리를 실행한다.
 #### 3.결과
 {% highlight markdown %}
 idx pidx name level
@@ -101,4 +101,5 @@ FROM student ORDER BY course, mark DESC;
 +------+------------+---------+---------+------+---------+
 {% endhighlight %}
 [출처](https://mariadb.com/kb/en/library/row_number/)
-
+#### 6.참고문서
+[링크 1](https://mariadb.com/resources/blog/connect-dead-long-live-cte-mariadb-server-102)
