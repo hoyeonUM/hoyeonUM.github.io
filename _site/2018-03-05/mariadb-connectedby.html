@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      mariadb 에서 connected by 를 써보자! &middot; 
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title"></h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        Chester
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2018-03-05 00:00:00 +0900">March 05, 2018</time>
+    
+  </div>
+
+  <h1 class="post-title">mariadb 에서 connected by 를 써보자!</h1>
+  <div class="post-line"></div>
+
+  <p>oracle 에서 사용할수있는 connected by 가 mariadb 10.2 버전이후로부터는 지원된다.
+####1. 테이블 생성</p>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">CREATE TABLE <span class="sb">`menu`</span> (
+  <span class="sb">`idx`</span> int(11) NOT NULL AUTO_INCREMENT,
+  <span class="sb">`parents_idx`</span> int(11) DEFAULT NULL,
+  <span class="sb">`name`</span> varchar(50) DEFAULT NULL,
+  PRIMARY KEY (<span class="sb">`idx`</span>),
+  KEY <span class="sb">`menu_menu_idx_fk`</span> (<span class="sb">`parents_idx`</span>),
+  CONSTRAINT <span class="sb">`menu_menu_idx_fk`</span> FOREIGN KEY (<span class="sb">`parents_idx`</span>) REFERENCES <span class="sb">`menu`</span> (<span class="sb">`idx`</span>)
+) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4</code></pre></figure>
+
+<p>소스코드 설치로 진행한다.</p>
+
+<h4 id="2-데이터-넣기">2. 데이터 넣기</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">INSERT INTO <span class="sb">`menu`</span> (idx, parents_idx, name) VALUES (1, null, '상품판매');
+INSERT INTO <span class="sb">`menu`</span> (idx, parents_idx, name) VALUES (3, null, '운영관리');
+INSERT INTO <span class="sb">`menu`</span> (idx, parents_idx, name) VALUES (4, 3, '사용자관리');
+INSERT INTO <span class="sb">`menu`</span> (idx, parents_idx, name) VALUES (5, 3, '관리자관리');
+INSERT INTO <span class="sb">`menu`</span> (idx, parents_idx, name) VALUES (6, 3, '비회원관리');
+INSERT INTO <span class="sb">`menu`</span> (idx, parents_idx, name) VALUES (7, 1, '메인매뉴판매');
+INSERT INTO <span class="sb">`menu`</span> (idx, parents_idx, name) VALUES (8, 1, '사이드매뉴판매');
+INSERT INTO <span class="sb">`menu`</span> (idx, parents_idx, name) VALUES (9, 4, '비밀번호변경');
+INSERT INTO <span class="sb">`menu`</span> (idx, parents_idx, name) VALUES (10, 4, '아이디변경');</code></pre></figure>
+
+<h4 id="3-조회">3. 조회</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">with recursive cte  as
+(
+  select     idx,
+  name,
+  parents_idx,
+  1 AS level
+  from       menu
+where parents_idx is null
+  union all
+  select     p.idx,
+  p.name,
+  p.parents_idx,
+  1+level as level
+  from       menu p
+  inner join cte
+  on p.parents_idx = cte.idx
+)
+select idx,ifnull( parents_idx, 0) as pidx,name, level from cte
+;</code></pre></figure>
+
+<h4 id="3결과">3.결과</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">idx pidx name level
+1	0	상품판매	1
+3	0	운영관리	1
+4	3	사용자관리	2
+5	3	관리자관리	2
+6	3	비회원관리	2
+7	1	메인매뉴판매	2
+8	1	사이드매뉴판매	2
+9	4	비밀번호변경	3
+10	4	아이디변경	3</code></pre></figure>
+
+<h4 id="4mariadb-101-이하">4.mariadb 10.1 이하</h4>
+<p><a href="https://explainextended.com/2009/03/17/hierarchical-queries-in-mysql/">참고</a></p>
+<h4 id="5기타">5.기타</h4>
+<p>그 이외에도 ROW_NUMBER 함수가 추가되어서 PARTITION BY 와 같이쓸수있음.</p>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">CREATE TABLE student(course VARCHAR(10), mark int, name varchar(10));
+
+INSERT INTO student VALUES 
+  ('Maths', 60, 'Thulile'),
+  ('Maths', 60, 'Pritha'),
+  ('Maths', 70, 'Voitto'),
+  ('Maths', 55, 'Chun'),
+  ('Biology', 60, 'Bilal'),
+   ('Biology', 70, 'Roger');
+
+SELECT 
+  RANK() OVER (PARTITION BY course ORDER BY mark DESC) AS rank, 
+  DENSE_RANK() OVER (PARTITION BY course ORDER BY mark DESC) AS dense_rank, 
+  ROW_NUMBER() OVER (PARTITION BY course ORDER BY mark DESC) AS row_num, 
+  course, mark, name 
+FROM student ORDER BY course, mark DESC;
++------+------------+---------+---------+------+---------+
+| rank | dense_rank | row_num | course  | mark | name    |
++------+------------+---------+---------+------+---------+
+|    1 |          1 |       1 | Biology |   70 | Roger   |
+|    2 |          2 |       2 | Biology |   60 | Bilal   |
+|    1 |          1 |       1 | Maths   |   70 | Voitto  |
+|    2 |          2 |       2 | Maths   |   60 | Thulile |
+|    2 |          2 |       3 | Maths   |   60 | Pritha  |
+|    4 |          3 |       4 | Maths   |   55 | Chun    |
++------+------------+---------+---------+------+---------+</code></pre></figure>
+
+<p><a href="https://mariadb.com/kb/en/library/row_number/">출처</a></p>
+
+
+
+</div>
+
+<div class="pagination">
+  
+  
+    <a href="/2017-12-26/innodb-buffer-pull" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; <time datetime="2018-05-14 15:41:56 +0900">2018</time> Chester How. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+      </span>
+    </footer>
+  </body>
+</html>
