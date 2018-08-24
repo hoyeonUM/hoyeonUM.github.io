@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      php 에서 한글포함 여부를 체크해보자 &middot; note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        Chester
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2018-08-24 00:00:00 +0900">August 24, 2018</time>
+    
+  </div>
+
+  <h1 class="post-title">php 에서 한글포함 여부를 체크해보자</h1>
+  <div class="post-line"></div>
+
+  <h5 id="oracle-에서-사용할수있는-connect-by-가-mariadb-102-버전이후로부터는-아래와-같이-지원된다">oracle 에서 사용할수있는 connect by 가 mariadb 10.2 버전이후로부터는 아래와 같이 지원된다.</h5>
+
+<h4 id="1-환경체크">1. 환경체크</h4>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">php <span class="nt">-v</span>
+PHP 7.2.9 <span class="o">(</span>cli<span class="o">)</span> <span class="o">(</span>built: Aug 15 2018 08:05:45<span class="o">)</span> <span class="o">(</span> NTS <span class="o">)</span>
+Copyright <span class="o">(</span>c<span class="o">)</span> 1997-2018 The PHP Group
+Zend Engine v3.2.0, Copyright <span class="o">(</span>c<span class="o">)</span> 1998-2018 Zend Technologies
+    with Zend OPcache v7.2.9, Copyright <span class="o">(</span>c<span class="o">)</span> 1999-2018, by Zend Technologie
+
+
+php <span class="nt">-m</span> |grep mbstring
+mbstring</code></pre></figure>
+
+<h4 id="2-코드샘플-실행">2. 코드샘플 실행</h4>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?php</span>
+<span class="nv">$notIncludeKR</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">'a'</span><span class="p">,</span>
+    <span class="s1">'b'</span><span class="p">,</span>
+    <span class="mi">1</span><span class="p">,</span>
+    <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+    <span class="s1">'A'</span><span class="p">,</span>
+    <span class="s1">'B'</span><span class="p">,</span>
+    <span class="s1">'C'</span><span class="p">,</span>
+    <span class="s1">'数'</span><span class="p">,</span>
+    <span class="s1">'数-色色'</span><span class="p">,</span>
+    <span class="s1">'+1'</span><span class="p">,</span>
+    <span class="s1">'|'</span><span class="p">,</span>
+    <span class="s1">'^-$'</span><span class="p">,</span>
+    <span class="s1">'1234'</span><span class="p">,</span>
+    <span class="s1">'[]'</span><span class="p">,</span>
+    <span class="s1">'!'</span><span class="p">,</span>
+    <span class="s1">'@'</span><span class="p">,</span>
+    <span class="s1">'#'</span>
+<span class="p">];</span>
+<span class="nv">$includeKR</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">'[ㄱ]'</span><span class="p">,</span>
+    <span class="s1">'数-가'</span><span class="p">,</span>
+    <span class="s1">'数-가-色'</span><span class="p">,</span>
+    <span class="s1">'★-가-色'</span><span class="p">,</span>
+    <span class="s1">'色-★-가'</span><span class="p">,</span>
+    <span class="s1">'가-★-色'</span><span class="p">,</span>
+    <span class="s1">'★-ㄱ-色'</span><span class="p">,</span>
+    <span class="s1">'★-ㄴ-色'</span><span class="p">,</span>
+    <span class="s1">'★-ㅣ-色'</span><span class="p">,</span>
+    <span class="s1">'★-ㅋ-色'</span><span class="p">,</span>
+<span class="p">];</span>
+<span class="c1">//case1
+</span><span class="k">function</span> <span class="nf">utf8Ord</span><span class="p">(</span><span class="nv">$ch</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nv">$len</span> <span class="o">=</span> <span class="nb">strlen</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$len</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="nv">$h</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="nv">$ch</span><span class="p">{</span><span class="mi">0</span><span class="p">});</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$h</span> <span class="o">&lt;=</span> <span class="mh">0x7F</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nv">$h</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$h</span> <span class="o">&lt;</span> <span class="mh">0xC2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$h</span> <span class="o">&lt;=</span> <span class="mh">0xDF</span> <span class="o">&amp;&amp;</span> <span class="nv">$len</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nv">$h</span> <span class="o">&amp;</span> <span class="mh">0x1F</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span> <span class="o">|</span> <span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="nv">$ch</span><span class="p">{</span><span class="mi">1</span><span class="p">})</span> <span class="o">&amp;</span> <span class="mh">0x3F</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$h</span> <span class="o">&lt;=</span> <span class="mh">0xEF</span> <span class="o">&amp;&amp;</span> <span class="nv">$len</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nv">$h</span> <span class="o">&amp;</span> <span class="mh">0x0F</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">12</span> <span class="o">|</span> <span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="nv">$ch</span><span class="p">{</span><span class="mi">1</span><span class="p">})</span> <span class="o">&amp;</span> <span class="mh">0x3F</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span> <span class="o">|</span> <span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="nv">$ch</span><span class="p">{</span><span class="mi">2</span><span class="p">})</span> <span class="o">&amp;</span> <span class="mh">0x3F</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nv">$h</span> <span class="o">&lt;=</span> <span class="mh">0xF4</span> <span class="o">&amp;&amp;</span> <span class="nv">$len</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="p">(</span><span class="nv">$h</span> <span class="o">&amp;</span> <span class="mh">0x0F</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">18</span> <span class="o">|</span> <span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="nv">$ch</span><span class="p">{</span><span class="mi">1</span><span class="p">})</span> <span class="o">&amp;</span> <span class="mh">0x3F</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">12</span> <span class="o">|</span> <span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="nv">$ch</span><span class="p">{</span><span class="mi">2</span><span class="p">})</span> <span class="o">&amp;</span> <span class="mh">0x3F</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span> <span class="o">|</span> <span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="nv">$ch</span><span class="p">{</span><span class="mi">3</span><span class="p">})</span> <span class="o">&amp;</span> <span class="mh">0x3F</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="nf">hasKorean</span><span class="p">(</span><span class="nv">$value</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="nv">$c</span> <span class="o">=</span> <span class="nx">utf8Ord</span><span class="p">(</span><span class="nv">$value</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="mh">0x1100</span> <span class="o">&lt;=</span> <span class="nv">$c</span> <span class="o">&amp;&amp;</span> <span class="nv">$c</span> <span class="o">&lt;=</span> <span class="mh">0x11FF</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="mh">0x3130</span> <span class="o">&lt;=</span> <span class="nv">$c</span> <span class="o">&amp;&amp;</span> <span class="nv">$c</span> <span class="o">&lt;=</span> <span class="mh">0x318F</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="p">(</span><span class="mh">0xAC00</span> <span class="o">&lt;=</span> <span class="nv">$c</span> <span class="o">&amp;&amp;</span> <span class="nv">$c</span> <span class="o">&lt;=</span> <span class="mh">0xD7A3</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">//case2
+</span><span class="k">function</span> <span class="nf">charAt</span><span class="p">(</span><span class="nv">$str</span><span class="p">,</span> <span class="nv">$pos</span><span class="p">,</span> <span class="nv">$encoding</span> <span class="o">=</span> <span class="s2">"UTF-8"</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="nb">mb_substr</span><span class="p">(</span><span class="nv">$str</span><span class="p">,</span> <span class="nv">$pos</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="nv">$encoding</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="nf">hasKoreanV2</span><span class="p">(</span><span class="nv">$ch</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;</span> <span class="nb">mb_strlen</span><span class="p">(</span><span class="nv">$ch</span><span class="p">);</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nb">preg_match</span><span class="p">(</span><span class="s2">"/[</span><span class="se">\xA1</span><span class="s2">-</span><span class="se">\xFE</span><span class="s2">][</span><span class="se">\xA1</span><span class="s2">-</span><span class="se">\xFE</span><span class="s2">]/"</span><span class="p">,</span> <span class="nx">charAt</span><span class="p">(</span><span class="nv">$ch</span><span class="p">,</span> <span class="nv">$i</span><span class="p">)))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">function</span> <span class="nf">hasKoreanV3</span><span class="p">(</span><span class="nv">$ch</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="nb">preg_match</span><span class="p">(</span><span class="s1">'/(\p{Hangul})/u'</span><span class="p">,</span> <span class="nv">$ch</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="k">echo</span> <span class="s1">'hasKorean method'</span><span class="p">;</span>
+<span class="k">echo</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+<span class="c1">//하위 케이스에서 echo 가 찍히면 안됨.
+</span><span class="k">foreach</span> <span class="p">(</span><span class="nv">$notIncludeKR</span> <span class="k">as</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">hasKorean</span><span class="p">(</span><span class="nv">$value</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="nv">$value</span><span class="p">;</span>
+        <span class="k">echo</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$includeKR</span> <span class="k">as</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasKorean</span><span class="p">(</span><span class="nv">$value</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="nv">$value</span><span class="p">;</span>
+        <span class="k">echo</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">echo</span> <span class="s1">'hasKorean method END'</span><span class="p">;</span>
+<span class="k">echo</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+
+
+<span class="k">echo</span> <span class="s1">'hasKorean method V2'</span><span class="p">;</span>
+<span class="k">echo</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+<span class="c1">//하위 케이스에서 echo 가 찍히면 안됨.
+</span><span class="k">foreach</span> <span class="p">(</span><span class="nv">$notIncludeKR</span> <span class="k">as</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">hasKoreanV2</span><span class="p">(</span><span class="nv">$value</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="nv">$value</span><span class="p">;</span>
+        <span class="k">echo</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$includeKR</span> <span class="k">as</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasKoreanV2</span><span class="p">(</span><span class="nv">$value</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="nv">$value</span><span class="p">;</span>
+        <span class="k">echo</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">echo</span> <span class="s1">'hasKoreanV2 method END'</span><span class="p">;</span>
+<span class="k">echo</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+
+
+<span class="k">echo</span> <span class="s1">'hasKorean method V3'</span><span class="p">;</span>
+<span class="k">echo</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+<span class="c1">//하위 케이스에서 echo 가 찍히면 안됨.
+</span><span class="k">foreach</span> <span class="p">(</span><span class="nv">$notIncludeKR</span> <span class="k">as</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="nx">hasKoreanV3</span><span class="p">(</span><span class="nv">$value</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="nv">$value</span><span class="p">;</span>
+        <span class="k">echo</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$includeKR</span> <span class="k">as</span> <span class="nv">$value</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">hasKoreanV3</span><span class="p">(</span><span class="nv">$value</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">echo</span> <span class="nv">$value</span><span class="p">;</span>
+        <span class="k">echo</span> <span class="nx">PHP_EOL</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="k">echo</span> <span class="s1">'hasKoreanV3 method END'</span><span class="p">;</span></code></pre></figure>
+
+<h4 id="3결과">3.결과</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">hasKorean method
+<span class="o">[</span>ㄱ]
+数-가
+数-가-色
+★-가-色
+色-★-가
+★-ㄱ-色
+★-ㄴ-色
+★-ㅣ-色
+★-ㅋ-色
+hasKorean method END
+hasKorean method V2
+<span class="o">[</span>ㄱ]
+★-ㄱ-色
+★-ㄴ-色
+★-ㅣ-色
+★-ㅋ-色
+hasKoreanV2 method END
+hasKorean method V3
+hasKoreanV3 method END</code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-plaintext" data-lang="plaintext">결과와 같이 hasKorean에서는 -가 들어간 문자 및 특수문자가 들어간 문자들을 걸러내지못하였고 hasKoreanV2 에서는 위에 hasKorean 을 보완하여 mbstring 함수를 사용하여 문자열을 하나씩 잘라서 for 문을 돌려서 한글자씩 문자열 체크를 진행하였다. 그럼에도 걸러지지 못하는 것들이 있어서 Hangul 이라는 정규표현식을 사용하여 통과하였다.
+
+php 5.1 이상부터 지원된다고한다.
+
+hasKoreanV2 에서는 hasKorean 에 사용된 utf8Ord 을 사용하면 mbstring 에서 잘라온 문자열 코드를 다르게 인식하여서 같은 코드를 사용할수없었다. 처음엔 간단하게 생각하여 javascript 와같이 str.split('') === explode('', str) 이런식으로 생각하여 문자열을 자르려고 시도를 했지만 기대값을 보여주지 못하였고 str[0], str[1] 과 같이 문자열에 배열로 진입하니까 문자열이 깨져서 나와 mbstring 을 사용하여 문자열을 분리하였다.</code></pre></figure>
+
+
+
+</div>
+
+<div class="pagination">
+  
+  
+    <a href="/2018-03-05/mariadb-connectedby" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; <time datetime="2018-08-24 17:45:08 +0900">2018</time> Chester How. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+      </span>
+    </footer>
+  </body>
+</html>
