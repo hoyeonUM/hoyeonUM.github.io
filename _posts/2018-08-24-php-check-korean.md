@@ -4,8 +4,6 @@ title: "php 에서 한글포함 여부를 체크해보자"
 author: "Chester"
 ---
 
-##### oracle 에서 사용할수있는 connect by 가 mariadb 10.2 버전이후로부터는 아래와 같이 지원된다.
-
 #### 1. 환경체크
 {% highlight bash%}
 php -v
