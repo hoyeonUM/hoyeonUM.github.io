@@ -7,7 +7,7 @@
 
   <title>
     
-      github 블로그를 jekyll 를 통해 관리해보자 &middot; 
+      github 블로그를 jekyll 를 통해 관리해보자 &middot; note
     
   </title>
 
@@ -26,7 +26,7 @@
     <nav class="nav">
       <div class="nav-container">
         <a href="/">
-          <h2 class="nav-title"></h2>
+          <h2 class="nav-title">note</h2>
         </a>
         <ul>
 	<!--<li><a href="/about">About</a></li>-->
@@ -56,69 +56,69 @@
 
 <h4 id="1필수패키지-설치">1.필수패키지 설치</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">yum install gcc-c++ patch readline readline-devel zlib zlib-devel
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">yum install gcc-c++ patch readline readline-devel zlib zlib-devel
 yum install libyaml-devel libffi-devel openssl-devel make
 yum install bzip2 autoconf automake libtool bison iconv-devel sqlite-devel</code></pre></figure>
 
 <h4 id="2rvm-설치">2.RVM 설치</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">curl -sSL https://rvm.io/mpapis.asc | gpg --import -
-curl -L get.rvm.io | bash -s stable
-source /etc/profile.d/rvm.sh
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">curl <span class="nt">-sSL</span> https://rvm.io/mpapis.asc | gpg <span class="nt">--import</span> -
+curl <span class="nt">-L</span> get.rvm.io | bash <span class="nt">-s</span> stable
+<span class="nb">source</span> /etc/profile.d/rvm.sh
 rvm reload</code></pre></figure>
 
 <h4 id="3verify-dependencies">3.Verify Dependencies</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">rvm requirements run</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">rvm requirements run</code></pre></figure>
 
 <h4 id="4ruby-22-설치">4.ruby 2.2 설치</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">rvm install ruby-2.2.5</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">rvm install ruby-2.2.5</code></pre></figure>
 
 <h4 id="5기본-루비버전-설정">5.기본 루비버전 설정</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">rvm use 2.2.5 --default</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">rvm use 2.2.5 <span class="nt">--default</span></code></pre></figure>
 
 <h4 id="6루비-버전체크">6.루비 버전체크</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">ruby --version
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ruby <span class="nt">--version</span>
 
-ruby 2.2.5p319 (2016-04-26 revision 54774) <span class="p">[</span><span class="nv">x86_64-linux</span><span class="p">]</span></code></pre></figure>
+ruby 2.2.5p319 <span class="o">(</span>2016-04-26 revision 54774<span class="o">)</span> <span class="o">[</span>x86_64-linux]</code></pre></figure>
 
 <h4 id="7파이썬-nodejs-설치">7.파이썬, nodejs 설치</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">yum install -y python nodejs</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">yum install <span class="nt">-y</span> python nodejs</code></pre></figure>
 
 <h4 id="8jekyll-설치및-talegit-clone">8.jekyll 설치및 tale.git clone</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">gem install jekyll
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">gem install jekyll
 gem install bundler
-cd /home
+<span class="nb">cd</span> /home
 git clone https://github.com/chesterhow/tale.git</code></pre></figure>
 
 <h4 id="9추가플러그인다운로드">9.추가플러그인다운로드</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">cd /home/tale
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">cd</span> /home/tale
 gem install jekyll-paginate</code></pre></figure>
 
 <h4 id="10실행">10.실행</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">jekyll serve -w -H 1.123.123.123<span class="sb">
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">jekyll serve <span class="nt">-w</span> <span class="nt">-H</span> 1.123.123.123
 
 
-</span>Configuration file: /home/tale/_config.yml
+Configuration file: /home/tale/_config.yml
             Source: /home/tale
        Destination: /home/tale/_site
- Incremental build: disabled. Enable with --incremental
+ Incremental build: disabled. Enable with <span class="nt">--incremental</span>
       Generating...
-                    done in 0.767 seconds.
- Auto-regeneration: enabled for '/home/tale'
+                    <span class="k">done in </span>0.767 seconds.
+ Auto-regeneration: enabled <span class="k">for</span> <span class="s1">'/home/tale'</span>
     Server address: http://1.123.123.123:4000/tale/
-  Server running... press ctrl-c to stop.<span class="sb">
+  Server running... press ctrl-c to stop.
 
 
-</span>여기서 -w 옵션을 주면 
-/home/tale/_posts/<span class="err">*</span>.md 파일이 변경될때마다 바로바로 웹페이지에 적용되는것을 확인할수있다.</code></pre></figure>
+여기서 <span class="nt">-w</span> 옵션을 주면 
+/home/tale/_posts/<span class="k">*</span>.md 파일이 변경될때마다 바로바로 웹페이지에 적용되는것을 확인할수있다.</code></pre></figure>
 
 
 
@@ -139,7 +139,7 @@ gem install jekyll-paginate</code></pre></figure>
 
     <footer>
       <span>
-        &copy; <time datetime="2018-05-14 15:41:56 +0900">2018</time> Chester How. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+        &copy; <time datetime="2018-08-24 17:45:08 +0900">2018</time> Chester How. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
       </span>
     </footer>
   </body>

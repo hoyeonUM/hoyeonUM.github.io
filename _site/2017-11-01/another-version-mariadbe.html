@@ -7,7 +7,7 @@
 
   <title>
     
-      mysql 을 두개 설치해보자 &middot; 
+      mysql 을 두개 설치해보자 &middot; note
     
   </title>
 
@@ -26,7 +26,7 @@
     <nav class="nav">
       <div class="nav-container">
         <a href="/">
-          <h2 class="nav-title"></h2>
+          <h2 class="nav-title">note</h2>
         </a>
         <ul>
 	<!--<li><a href="/about">About</a></li>-->
@@ -59,40 +59,40 @@
 
 <h4 id="1컴파일을-하기위한-라이브러리-설치">1.컴파일을 하기위한 라이브러리 설치</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">yum install cmake ncurses ncurses-devel bison gcc gcc-c++ -y</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">yum install cmake ncurses ncurses-devel bison gcc gcc-c++ <span class="nt">-y</span></code></pre></figure>
 
 <h4 id="2source-code-를-다운로드한다">2.source code 를 다운로드한다.</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">cd /usr/local/src
-wget -N https://downloads.mariadb.org/interstitial/mariadb-10.2.7/source/mariadb-10.2.7.tar.gz
-tar zxvf mariadb-10.2.7.tar.gz
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">cd</span> /usr/local/src
+wget <span class="nt">-N</span> https://downloads.mariadb.org/interstitial/mariadb-10.2.7/source/mariadb-10.2.7.tar.gz
+<span class="nb">tar </span>zxvf mariadb-10.2.7.tar.gz
 mkdir build
-cd build</code></pre></figure>
+<span class="nb">cd </span>build</code></pre></figure>
 
 <h4 id="3compile">3.compile</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown"> cmake ../mariadb-10.2.7 -DWITH_READLINE=1 -DWITH_READLINE=1 -DWITH_SSL=bundled -DWITH_ZLIB=system -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DENABLED_LOCAL_INFILE=1 -DWITH_EXTRA_CHARSETS=all -DWITH_ARIA_STORAGE_ENGINE=1 -DWITH_XTRADB_STORAGE_ENGINE=1 -DWITH_ARCHIVE_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_PARTITION_STORAGE_ENGINE=1 -DWITH_BLACKHOLE_STORAGE_ENGINE=1 -DWITH_FEDERATEDX_STORAGE_ENGINE=1 -DWITH_PERFSCHEMA_STORAGE_ENGINE=1 -DCMAKE_INSTALL_PREFIX=/usr/local/mariadb-10.2.7 -DMYSQL_DATADIR=/disk/mysql10.2.7</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"> cmake ../mariadb-10.2.7 <span class="nt">-DWITH_READLINE</span><span class="o">=</span>1 <span class="nt">-DWITH_READLINE</span><span class="o">=</span>1 <span class="nt">-DWITH_SSL</span><span class="o">=</span>bundled <span class="nt">-DWITH_ZLIB</span><span class="o">=</span>system <span class="nt">-DDEFAULT_CHARSET</span><span class="o">=</span>utf8 <span class="nt">-DDEFAULT_COLLATION</span><span class="o">=</span>utf8_general_ci <span class="nt">-DENABLED_LOCAL_INFILE</span><span class="o">=</span>1 <span class="nt">-DWITH_EXTRA_CHARSETS</span><span class="o">=</span>all <span class="nt">-DWITH_ARIA_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_XTRADB_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_ARCHIVE_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_INNOBASE_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_PARTITION_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_BLACKHOLE_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_FEDERATEDX_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_PERFSCHEMA_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DCMAKE_INSTALL_PREFIX</span><span class="o">=</span>/usr/local/mariadb-10.2.7 <span class="nt">-DMYSQL_DATADIR</span><span class="o">=</span>/disk/mysql10.2.7</code></pre></figure>
 
 <h4 id="4setup">4.setup</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">make ; make install </code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">make <span class="p">;</span> make install </code></pre></figure>
 
 <h4 id="5설정파일-복사">5.설정파일 복사</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">cp /usr/local/mariadb-10.2.7/support-files/my-innodb-heavy-4G.cnf /etc/sql.cnf</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">cp /usr/local/mariadb-10.2.7/support-files/my-innodb-heavy-4G.cnf /etc/sql.cnf</code></pre></figure>
 
 <h4 id="6계정추가는전버전에서--이미-만들었으므로-생략">6.계정추가는전버전에서  이미 만들었으므로 생략</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">adduser mysql</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">adduser mysql</code></pre></figure>
 
 <h4 id="7alias-설정">7.alias 설정</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">alias maria10.2start='/usr/local/mariadb-10.2.7/bin/mysqld_safe --defaults-file=/etc/sql.cnf &amp;'
+<figure class="highlight"><pre><code class="language-sehll" data-lang="sehll">alias maria10.2start='/usr/local/mariadb-10.2.7/bin/mysqld_safe --defaults-file=/etc/sql.cnf &amp;'
 alias maria10.2='mysql --defaults-file=/etc/sql.cnf -uroot -p'</code></pre></figure>
 
 <h4 id="8바로적용">8.바로적용</h4>
 
-<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">source ~/.bashrc</code></pre></figure>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">source</span> ~/.bashrc</code></pre></figure>
 
 <h4 id="참조링크--centos-64bit-mariadb-10-소스-컴파일-설치하기">참조링크 : <a href="http://88oy.tistory.com/383">CentOS 64Bit MariaDB 10 소스 컴파일 설치하기</a></h4>
 
@@ -113,7 +113,7 @@ alias maria10.2='mysql --defaults-file=/etc/sql.cnf -uroot -p'</code></pre></fig
 
     <footer>
       <span>
-        &copy; <time datetime="2018-05-14 15:41:56 +0900">2018</time> Chester How. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+        &copy; <time datetime="2018-08-24 17:45:08 +0900">2018</time> Chester How. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
       </span>
     </footer>
   </body>

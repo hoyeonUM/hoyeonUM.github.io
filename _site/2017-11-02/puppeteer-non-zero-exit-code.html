@@ -7,7 +7,7 @@
 
   <title>
     
-      puppeteer the Node.js process with a non-zero exit code &middot; 
+      puppeteer the Node.js process with a non-zero exit code &middot; note
     
   </title>
 
@@ -26,7 +26,7 @@
     <nav class="nav">
       <div class="nav-container">
         <a href="/">
-          <h2 class="nav-title"></h2>
+          <h2 class="nav-title">note</h2>
         </a>
         <ul>
 	<!--<li><a href="/about">About</a></li>-->
@@ -57,25 +57,22 @@
 
 <p>윈도우에 잘 설치한 이후 테스트를 끝낸이후 QA 서버 (centos) 환경에 배포완료.</p>
 
-<p><code class="highlighter-rouge">puppeteer the Node.js process with a non-zero exit code.</code> 와 같은 오류코드가 나온다.</p>
+<h4 id="실행명령어">실행명령어</h4>
 
-<p><code class="highlighter-rouge">./node_modules/puppeteer/.local-chromium/linux-508693/chrome-linux/chrome -v --headless --no-sandbox --disable-setuid-sandbox</code> 실행명령어는 다음과 같다.</p>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./node_modules/puppeteer/.local-chromium/linux-508693/chrome-linux/chrome <span class="nt">-v</span> <span class="nt">--headless</span> <span class="nt">--no-sandbox</span> <span class="nt">--disable-setuid-sandbox</span></code></pre></figure>
 
-<p>찾아본 결과 다음과 같이 처리.</p>
+<h4 id="오류발생">오류발생</h4>
 
-<ol>
-  <li>
-    <p><code class="highlighter-rouge">yum install -y nss</code></p>
-  </li>
-  <li>
-    <p><code class="highlighter-rouge">yum install ipa-gothic-fonts xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-utils xorg-x11-fonts-cyrillic xorg-x11-fonts-Type1 xorg-x11-fonts-misc -y</code></p>
-  </li>
-  <li>
-    <p><code class="highlighter-rouge">yum install pango.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXtst.x86_64 cups-libs.x86_64 libXScrnSaver.x86_64 libXrandr.x86_64 GConf2.x86_64 alsa-lib.x86_64 atk.x86_64 gtk3.x86_64 -y</code></p>
-  </li>
-</ol>
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">puppeteer the Node.js process with a non-zero <span class="nb">exit </span>code.</code></pre></figure>
 
-<p>무슨 설치가 이렇게 많이빠져있는지는 모르겠지만 정상동작확인완료.</p>
+<h4 id="해결">해결</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">yum install <span class="nt">-y</span> nss
+
+yum install ipa-gothic-fonts xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-utils xorg-x11-fonts-cyrillic xorg-x11-fonts-Type1 xorg-x11-fonts-misc <span class="nt">-y</span>
+
+yum install pango.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXtst.x86_64 cups-libs.x86_64 libXScrnSaver.x86_64 libXrand
+r.x86_64 GConf2.x86_64 alsa-lib.x86_64 atk.x86_64 gtk3.x86_64 <span class="nt">-y</span></code></pre></figure>
 
 
 
@@ -96,7 +93,7 @@
 
     <footer>
       <span>
-        &copy; <time datetime="2018-05-14 15:41:56 +0900">2018</time> Chester How. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
+        &copy; <time datetime="2018-08-24 17:45:08 +0900">2018</time> Chester How. Made with Jekyll using the <a href="https://github.com/chesterhow/tale/">Tale</a> theme.
       </span>
     </footer>
   </body>

@@ -8,7 +8,7 @@ author: "Chester"
 
 
 #### 1. 테이블 생성
-{% highlight markdown %}
+{% highlight sql %}
 CREATE TABLE `menu` (
   `idx` int(11) NOT NULL AUTO_INCREMENT,
   `parents_idx` int(11) DEFAULT NULL,
@@ -20,7 +20,7 @@ CREATE TABLE `menu` (
 {% endhighlight %}
 
 #### 2. 데이터 넣기
-{% highlight markdown %}
+{% highlight sql %}
 INSERT INTO `menu` (idx, parents_idx, name) VALUES (1, null, '상품판매');
 INSERT INTO `menu` (idx, parents_idx, name) VALUES (3, null, '운영관리');
 INSERT INTO `menu` (idx, parents_idx, name) VALUES (4, 3, '사용자관리');
@@ -32,7 +32,7 @@ INSERT INTO `menu` (idx, parents_idx, name) VALUES (9, 4, '비밀번호변경');
 INSERT INTO `menu` (idx, parents_idx, name) VALUES (10, 4, '아이디변경');
 {% endhighlight %}
 #### 3. 조회
-{% highlight markdown %}
+{% highlight sql %}
 with recursive cte  as
 (
   select     idx,
@@ -72,7 +72,7 @@ idx pidx name level
 [참고](https://explainextended.com/2009/03/17/hierarchical-queries-in-mysql/)  
 #### 5.기타
 그 이외에도 ROW_NUMBER 함수가 추가되어서 PARTITION BY 와 같이쓸수있음.
-{% highlight markdown %}
+{% highlight sql %}
 CREATE TABLE student(course VARCHAR(10), mark int, name varchar(10));
 
 INSERT INTO student VALUES 
