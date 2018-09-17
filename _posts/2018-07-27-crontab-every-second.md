@@ -21,7 +21,7 @@ cd /home/crontab
 npm install cron
 {% endhighlight %}
 
-#####아래코드는 npm 홈페이지에 있는 샘플코드다.
+#### 아래코드는 npm 홈페이지에 있는 샘플코드다.
 {% highlight js %}
 vim test.js
 
@@ -38,7 +38,7 @@ You will see this message every second
 ....
 
 {% endhighlight %}
-##### npm 링크를타고 들어가보면 다음과 같이 설정 영역이 되어있다.
+#### npm 링크를타고 들어가보면 다음과 같이 설정 영역이 되어있다.
 - Seconds: 0-59
 - Minutes: 0-59
 - Hours: 0-23
@@ -46,7 +46,7 @@ You will see this message every second
 - Months: 0-11 (Jan-Dec)
 - Day of Week: 0-6 (Sun-Sat)
 
-##### 리눅스 cron 설정보다 * 이 한개더많다. 앞에는 optional 로 초단위 설정은 줘도 되고 안줘도 된다.
+###### -리눅스 cron 설정보다 * 이 한개더많다. 앞에는 optional 로 초단위 설정은 줘도 되고 안줘도 된다.
 
 #### 이제 해당 크론탭 데몬이 죽었을때 다시 살려줄수있는 데몬을 활용해보자.
 {% highlight shell bash%}
@@ -61,7 +61,7 @@ You will see this message every second
 You will see this message every second
 You will see this message every second
 {% endhighlight %} 
-##### 다음은 내가자주 쓰는 옵션이다.
+###### 다음은 내가자주 쓰는 옵션이다.
 - -l 로그파일 위치
 - -a 로그파일 append
 - list (forever list) 현재목록
