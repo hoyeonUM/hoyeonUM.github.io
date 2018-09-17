@@ -361,5 +361,5 @@ filter: ( port 27019 ) and ((ip || ip6) || (vlan && (ip || ip6)))
 #위와같이 mongos1 라우터로는 접근을 시도하나 접속되지 않아 mongos2 라우터로 요청하는것을 확인할수있다.
 {% endhighlight %}
 #### 비고
-##### hash mark (#) 는 ngrep 에서 요청이 왔을때 표시해줌 ngrep (-q is be quiet (don't print packet reception hash marks)
+##### hash mark (#) 는 ngrep 에서 요청이 왔을때 표시해줌 ngrep (-q is be quiet (don't print packet reception hash marks.)
 [참조링크](https://dzone.com/articles/composing-a-sharded-mongodb-on-docker)
