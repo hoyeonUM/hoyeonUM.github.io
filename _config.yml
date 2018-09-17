@@ -3,7 +3,7 @@ permalink:      /:year-:month-:day/:title
 
 # Setup
 title:          note 
-paginate:       5
+paginate:       1000
 baseurl:        ""
 url:            "https://chesterhow.github.io"
 
