@@ -5,7 +5,7 @@ permalink:      /:year-:month-:day/:title
 title:          note 
 paginate:       1000
 baseurl:        ""
-url:            "https://chesterhow.github.io"
+url:            "http://hoyeonum.github.io"
 
 # Assets
 sass:
@@ -17,14 +17,14 @@ markdown:       kramdown
 
 # About
 author:
-  name:         Chester How
-  url:          http://chester.how
-  email:        chesterhow@gmail.com
+  name:         hoyeon
+  url:          http://hoyeonum.github.io
+  email:        dus815@gmail.com
 
 # Custom vars
 version:        3.4.1
 github:
-  repo:         https://github.com/chesterhow/tale
+        repo:        https://github.com/hoyeonUM/hoyeonUM.github.io 
 
 # Gems
 plugins:
