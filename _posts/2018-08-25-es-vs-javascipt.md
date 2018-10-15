@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "ECMAScript vs JavaScript"
-author: "Chester"
+author: "hoyeonUm"
 ---
 
 #### ECMAScript

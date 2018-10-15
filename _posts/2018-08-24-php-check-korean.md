@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "php 에서 한글포함 여부를 체크해보자"
-author: "Chester"
+author: "hoyeonUm"
 ---
 
 #### 1. 환경체크

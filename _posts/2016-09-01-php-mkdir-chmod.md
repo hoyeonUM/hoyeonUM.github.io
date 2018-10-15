@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "PHP mkdir 권한 문제(umask)"
-author: "Chester"
+author: "hoyeonUm"
 ---
 
 파일 업로드 관련 코드를 작성하던 도중 다음과 같은 코드가 있었다.

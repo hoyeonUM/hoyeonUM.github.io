@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "tcpdump 와 wireshark 를 이용해 디버깅 하기"
-author: "Chester"
+author: "hoyeonUm"
 ---
 
 서버를 운영하다보면 A 서버에서 B 서버로 API 를 호출하는데 기대값이 아닌 엉뚱한 값이 나오는 경우가 있다.

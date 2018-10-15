@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "JavaScript Transcompile 을 진행해보자"
-author: "Chester"
+author: "hoyeonUm"
 ---
 
 예전 진행한 프로젝트에서 function 을 arrow function 으로 변환하는 도중 다음과 같은코드가 있었다.

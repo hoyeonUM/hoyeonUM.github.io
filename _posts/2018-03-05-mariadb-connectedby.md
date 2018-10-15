@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "mariadb 에서 connected by 를 써보자!"
-author: "Chester"
+author: "hoyeonUm"
 ---
 
 ##### oracle 에서 사용할수있는 connect by 가 mariadb 10.2 버전이후로부터는 아래와 같이 지원된다.

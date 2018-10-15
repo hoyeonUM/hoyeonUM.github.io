@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Inoodb buffer pool 이란 ?"
-author: "Chester"
+author: "hoyeonUm"
 ---
 {% highlight markdown %}
 'mysql' innodb buffer pool 설정에 관해서 알아보자.

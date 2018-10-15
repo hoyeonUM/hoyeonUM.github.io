@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "MongoDB 를 docker로 세팅해보자"
-author: "Chester"
+author: "hoyeonUm"
 ---
 {% highlight markdown %}
 몽고디비를 로컬환경에 설치를 해야하는데 라우트서버와 샤드서버 콘피그서버를 설치하려니까 이것저것 해야할 부분들이 너무많아서 docker 로 설치하는 방법이 제일 빠를거 같아 docker 를 올려보았다.

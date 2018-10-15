@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "node를 사용한 초단위 cron 설정을 진행해보자"
-author: "Chester"
+author: "hoyeonUm"
 ---
 
 #### 환경체크

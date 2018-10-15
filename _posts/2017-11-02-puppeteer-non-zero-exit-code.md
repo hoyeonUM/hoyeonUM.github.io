@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "puppeteer the Node.js process with a non-zero exit code"
-author: "Chester"
+author: "hoyeonUm"
 ---
 
 Lazy loading 싸이트를 긁어오기위해 요즘 핫하다는 puppeteer 를 사용해보고자 설치했다.

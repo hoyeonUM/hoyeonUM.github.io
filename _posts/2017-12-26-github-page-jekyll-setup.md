@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "github 블로그를 jekyll 를 통해 관리해보자"
-author: "Chester"
+author: "hoyeonUm"
 ---
 
 ### 환경 centos7
