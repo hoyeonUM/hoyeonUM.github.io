@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      JavaScript Transcompile 을 진행해보자 &middot; note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127067628-1"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127067628-1');
+  </script>
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        hoyeonUm
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2018-09-19 00:00:00 +0900">September 19, 2018</time>
+    
+  </div>
+
+  <h1 class="post-title">JavaScript Transcompile 을 진행해보자</h1>
+  <div class="post-line"></div>
+
+  <p>예전 진행한 프로젝트에서 function 을 arrow function 으로 변환하는 도중 다음과 같은코드가 있었다.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">let</span> <span class="nx">someThingObject</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">something</span> <span class="p">:</span> <span class="s1">'test'</span> <span class="p">,</span>
+  <span class="na">getSomthing</span> <span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">somthing</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="nx">someThingObject</span><span class="p">.</span><span class="nx">getSomthing</span><span class="p">();</span> <span class="c1">//test</span></code></pre></figure>
+
+<p>해당코드를 다음과 같이 변환하고있는데 일반 function 에서는 잘되던 this 값이 arrow function 으로 이동되면서는 전달되지 않는 문제가 생겼다.
+arrow function 은 this 를 that 이나 bind 함수 없이 쓸수있도록 도와준다고 알고있었는데 적용이 안되어서 테스트를 진행해 보았다.</p>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="kd">let</span> <span class="nx">someThingObject</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">something</span> <span class="p">:</span> <span class="s1">'test'</span> <span class="p">,</span>
+  <span class="na">getSomthing</span> <span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">somthing</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+<span class="nx">someThingObject</span><span class="p">.</span><span class="nx">getSomthing</span><span class="p">();</span> <span class="c1">//undefined</span></code></pre></figure>
+
+<p>node 랑 npm 은 설치 되어있다고 가정하고 진행한다.</p>
+
+<h4 id="setup">setUp</h4>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">npm install babel-cli <span class="nt">-g</span>
+
+/usr/bin/babel-doctor -&gt; /usr/lib/node_modules/babel-cli/bin/babel-doctor.js
+/usr/bin/babel -&gt; /usr/lib/node_modules/babel-cli/bin/babel.js
+/usr/bin/babel-node -&gt; /usr/lib/node_modules/babel-cli/bin/babel-node.js
+/usr/bin/babel-external-helpers -&gt; /usr/lib/node_modules/babel-cli/bin/babel-external-helpers.js
+
+<span class="nb">cd</span> /home
+mkdir ./babeltest
+<span class="nb">cd</span> ./babeltes
+
+//babel preset setup
+npm install <span class="nt">--save-dev</span> babel-preset-es2015t
+
+//babelrc
+vim ./.babelrc
+<span class="o">{</span>
+  <span class="s2">"presets"</span>:[<span class="s2">"es2015"</span><span class="o">]</span>
+<span class="o">}</span></code></pre></figure>
+
+<p>기초세팅종료.</p>
+
+<h4 id="testjs">test.js</h4>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">vim</span> <span class="p">.</span><span class="o">/</span><span class="nx">test</span><span class="p">.</span><span class="nx">js</span>
+
+<span class="kd">let</span> <span class="nx">testObj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">testVal</span> <span class="p">:</span> <span class="s1">'1234'</span><span class="p">,</span>
+  <span class="na">callArrow</span> <span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">testVal</span><span class="p">)</span>
+  <span class="p">},</span>
+  <span class="na">callFunction</span> <span class="p">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">testVal</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="na">callFunctionInArrow</span> <span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">testVal</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">},</span>
+  <span class="na">callFunctionInFunction</span> <span class="p">:</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">testVal</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">},</span>
+  <span class="na">callArrowInArrow</span> <span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">testVal</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">},</span>
+  <span class="na">callArrowInFunction</span> <span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">testVal</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">},</span>
+<span class="p">}</span>
+<span class="nx">testObj</span><span class="p">.</span><span class="nx">callArrow</span><span class="p">();</span> <span class="c1">//undefined</span>
+<span class="nx">testObj</span><span class="p">.</span><span class="nx">callFunction</span><span class="p">();</span> <span class="c1">//1234</span>
+<span class="nx">testObj</span><span class="p">.</span><span class="nx">callFunctionInArrow</span><span class="p">();</span> <span class="c1">//1234</span>
+<span class="nx">testObj</span><span class="p">.</span><span class="nx">callFunctionInFunction</span><span class="p">();</span> <span class="c1">//undefined</span>
+<span class="nx">testObj</span><span class="p">.</span><span class="nx">callArrowInArrow</span><span class="p">();</span> <span class="c1">//undefined</span>
+<span class="nx">testObj</span><span class="p">.</span><span class="nx">callArrowInFunction</span><span class="p">();</span> <span class="c1">//undefined</span></code></pre></figure>
+
+<h4 id="babel-compile">babel compile</h4>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">babel</span> <span class="p">.</span><span class="o">/</span><span class="nx">test</span><span class="p">.</span><span class="nx">js</span> <span class="o">-</span><span class="nx">o</span> <span class="p">.</span><span class="o">/</span><span class="nx">test_compile</span><span class="p">.</span><span class="nx">js</span>
+
+<span class="nx">vim</span> <span class="p">.</span><span class="o">/</span><span class="nx">test_compile</span><span class="p">.</span><span class="nx">js</span>
+
+<span class="s1">'use strict'</span><span class="p">;</span>
+
+<span class="kd">var</span> <span class="nx">testObj</span> <span class="o">=</span> <span class="p">{</span>
+  <span class="na">testVal</span><span class="p">:</span> <span class="s1">'1234'</span><span class="p">,</span>
+  <span class="na">callArrow</span><span class="p">:</span> <span class="kd">function</span> <span class="nx">callArrow</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="kc">undefined</span><span class="p">.</span><span class="nx">testVal</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="na">callFunction</span><span class="p">:</span> <span class="kd">function</span> <span class="nx">callFunction</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">testVal</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="na">callFunctionInArrow</span><span class="p">:</span> <span class="kd">function</span> <span class="nx">callFunctionInArrow</span><span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">_this</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">_this</span><span class="p">.</span><span class="nx">testVal</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">},</span>
+  <span class="na">callFunctionInFunction</span><span class="p">:</span> <span class="kd">function</span> <span class="nx">callFunctionInFunction</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">testVal</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">},</span>
+  <span class="na">callArrowInArrow</span><span class="p">:</span> <span class="kd">function</span> <span class="nx">callArrowInArrow</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="kc">undefined</span><span class="p">.</span><span class="nx">testVal</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">},</span>
+  <span class="na">callArrowInFunction</span><span class="p">:</span> <span class="kd">function</span> <span class="nx">callArrowInFunction</span><span class="p">()</span> <span class="p">{</span>
+    <span class="nx">setTimeout</span><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">testVal</span><span class="p">);</span>
+    <span class="p">});</span>
+  <span class="p">}</span>
+<span class="p">};</span>
+<span class="nx">testObj</span><span class="p">.</span><span class="nx">callArrow</span><span class="p">();</span> <span class="c1">//undefined</span>
+<span class="nx">testObj</span><span class="p">.</span><span class="nx">callFunction</span><span class="p">();</span> <span class="c1">//1234</span>
+<span class="nx">testObj</span><span class="p">.</span><span class="nx">callFunctionInArrow</span><span class="p">();</span> <span class="c1">//1234</span>
+<span class="nx">testObj</span><span class="p">.</span><span class="nx">callFunctionInFunction</span><span class="p">();</span> <span class="c1">//undefined</span>
+<span class="nx">testObj</span><span class="p">.</span><span class="nx">callArrowInArrow</span><span class="p">();</span> <span class="c1">//undefined</span>
+<span class="nx">testObj</span><span class="p">.</span><span class="nx">callArrowInFunction</span><span class="p">();</span> <span class="c1">//undefined</span></code></pre></figure>
+
+<p>위와 같이 애초에 this 값이 undefined 로 변환되서 저장되는것을 확인할수있다.</p>
+
+<p>화살표 함수에서 this 를 찾을수 없는 이유는</p>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">화살표 함수는 자기 자신의 this 를 가지고있지않는다.(bind 와 같은 행위를 할수없음) 따라서
+화살표 함수 내에서 this 에 대한 호출이 일어나면 this에 대한 바인딩을 찾기위해 화살표 함수의 범위를 찾기 시작한다.
+일반 함수 (function a () {}) 와 global scope 만이 this 를 소유할수 있기때문에 화살표 함수는 object 안에서의 this 를 찾을수 없다. 따라서 최상위 (global scope) 의 this 를 참조하게 된다.</code></pre></figure>
+
+<p><a href="https://github.com/anirudh-modi/JS-essentials/blob/master/ES2015/Functions/Arrow%20functions.md#how-this-is-different-for-arrow-functions">참조</a></p>
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2018-10-01/wireshark-example" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2018-08-25/es-vs-javascipt" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; hoyeon. <time datetime="2018-10-15 16:00:06 +0900">2018</time>
+      </span>
+    </footer>
+  </body>
+</html>

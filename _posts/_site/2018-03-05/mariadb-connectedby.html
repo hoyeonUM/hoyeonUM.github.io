@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      mariadb 에서 connected by 를 써보자! &middot; note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127067628-1"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127067628-1');
+  </script>
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        hoyeonUm
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2018-03-05 00:00:00 +0900">March 05, 2018</time>
+    
+  </div>
+
+  <h1 class="post-title">mariadb 에서 connected by 를 써보자!</h1>
+  <div class="post-line"></div>
+
+  <h5 id="oracle-에서-사용할수있는-connect-by-가-mariadb-102-버전이후로부터는-아래와-같이-지원된다">oracle 에서 사용할수있는 connect by 가 mariadb 10.2 버전이후로부터는 아래와 같이 지원된다.</h5>
+
+<h4 id="1-테이블-생성">1. 테이블 생성</h4>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nv">`menu`</span> <span class="p">(</span>
+  <span class="nv">`idx`</span> <span class="n">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">NOT</span> <span class="k">NULL</span> <span class="n">AUTO_INCREMENT</span><span class="p">,</span>
+  <span class="nv">`parents_idx`</span> <span class="n">int</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="nv">`name`</span> <span class="n">varchar</span><span class="p">(</span><span class="mi">50</span><span class="p">)</span> <span class="k">DEFAULT</span> <span class="k">NULL</span><span class="p">,</span>
+  <span class="k">PRIMARY</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`idx`</span><span class="p">),</span>
+  <span class="k">KEY</span> <span class="nv">`menu_menu_idx_fk`</span> <span class="p">(</span><span class="nv">`parents_idx`</span><span class="p">),</span>
+  <span class="k">CONSTRAINT</span> <span class="nv">`menu_menu_idx_fk`</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="nv">`parents_idx`</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="nv">`menu`</span> <span class="p">(</span><span class="nv">`idx`</span><span class="p">)</span>
+<span class="p">)</span> <span class="n">ENGINE</span><span class="o">=</span><span class="n">InnoDB</span> <span class="n">AUTO_INCREMENT</span><span class="o">=</span><span class="mi">11</span> <span class="k">DEFAULT</span> <span class="n">CHARSET</span><span class="o">=</span><span class="n">utf8mb4</span></code></pre></figure>
+
+<h4 id="2-데이터-넣기">2. 데이터 넣기</h4>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`menu`</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">parents_idx</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="k">null</span><span class="p">,</span> <span class="s1">'상품판매'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`menu`</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">parents_idx</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="k">null</span><span class="p">,</span> <span class="s1">'운영관리'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`menu`</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">parents_idx</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'사용자관리'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`menu`</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">parents_idx</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'관리자관리'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`menu`</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">parents_idx</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'비회원관리'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`menu`</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">parents_idx</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'메인매뉴판매'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`menu`</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">parents_idx</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'사이드매뉴판매'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`menu`</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">parents_idx</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">9</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'비밀번호변경'</span><span class="p">);</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nv">`menu`</span> <span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">parents_idx</span><span class="p">,</span> <span class="n">name</span><span class="p">)</span> <span class="k">VALUES</span> <span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'아이디변경'</span><span class="p">);</span></code></pre></figure>
+
+<h4 id="3-조회">3. 조회</h4>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">with</span> <span class="k">recursive</span> <span class="n">cte</span>  <span class="k">as</span>
+<span class="p">(</span>
+  <span class="k">select</span>     <span class="n">idx</span><span class="p">,</span>
+  <span class="n">name</span><span class="p">,</span>
+  <span class="n">parents_idx</span><span class="p">,</span>
+  <span class="mi">1</span> <span class="k">AS</span> <span class="k">level</span>
+  <span class="k">from</span>       <span class="n">menu</span>
+<span class="k">where</span> <span class="n">parents_idx</span> <span class="k">is</span> <span class="k">null</span>
+  <span class="k">union</span> <span class="k">all</span>
+  <span class="k">select</span>     <span class="n">p</span><span class="p">.</span><span class="n">idx</span><span class="p">,</span>
+  <span class="n">p</span><span class="p">.</span><span class="n">name</span><span class="p">,</span>
+  <span class="n">p</span><span class="p">.</span><span class="n">parents_idx</span><span class="p">,</span>
+  <span class="mi">1</span><span class="o">+</span><span class="k">level</span> <span class="k">as</span> <span class="k">level</span>
+  <span class="k">from</span>       <span class="n">menu</span> <span class="n">p</span>
+  <span class="k">inner</span> <span class="k">join</span> <span class="n">cte</span>
+  <span class="k">on</span> <span class="n">p</span><span class="p">.</span><span class="n">parents_idx</span> <span class="o">=</span> <span class="n">cte</span><span class="p">.</span><span class="n">idx</span>
+<span class="p">)</span>
+<span class="k">select</span> <span class="n">idx</span><span class="p">,</span><span class="n">ifnull</span><span class="p">(</span> <span class="n">parents_idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="k">as</span> <span class="n">pidx</span><span class="p">,</span><span class="n">name</span><span class="p">,</span> <span class="k">level</span> <span class="k">from</span> <span class="n">cte</span>
+<span class="p">;</span></code></pre></figure>
+
+<h5 id="첫번째-에서는-재귀-대상이-될-대상을-조회한이후-다음-union-절에서는-재귀-쿼리를-실행한다">첫번째 에서는 재귀 대상이 될 대상을 조회한이후 다음 union 절에서는 재귀 쿼리를 실행한다.</h5>
+<h4 id="3결과">3.결과</h4>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">idx pidx name level
+1	0	상품판매	1
+3	0	운영관리	1
+4	3	사용자관리	2
+5	3	관리자관리	2
+6	3	비회원관리	2
+7	1	메인매뉴판매	2
+8	1	사이드매뉴판매	2
+9	4	비밀번호변경	3
+10	4	아이디변경	3</code></pre></figure>
+
+<h4 id="4mariadb-101-이하">4.mariadb 10.1 이하</h4>
+<p><a href="https://explainextended.com/2009/03/17/hierarchical-queries-in-mysql/">참고</a></p>
+<h4 id="5기타">5.기타</h4>
+<p>그 이외에도 ROW_NUMBER 함수가 추가되어서 PARTITION BY 와 같이쓸수있음.</p>
+
+<figure class="highlight"><pre><code class="language-sql" data-lang="sql"><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">student</span><span class="p">(</span><span class="n">course</span> <span class="n">VARCHAR</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="n">mark</span> <span class="n">int</span><span class="p">,</span> <span class="n">name</span> <span class="n">varchar</span><span class="p">(</span><span class="mi">10</span><span class="p">));</span>
+
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="n">student</span> <span class="k">VALUES</span> 
+  <span class="p">(</span><span class="s1">'Maths'</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="s1">'Thulile'</span><span class="p">),</span>
+  <span class="p">(</span><span class="s1">'Maths'</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="s1">'Pritha'</span><span class="p">),</span>
+  <span class="p">(</span><span class="s1">'Maths'</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="s1">'Voitto'</span><span class="p">),</span>
+  <span class="p">(</span><span class="s1">'Maths'</span><span class="p">,</span> <span class="mi">55</span><span class="p">,</span> <span class="s1">'Chun'</span><span class="p">),</span>
+  <span class="p">(</span><span class="s1">'Biology'</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="s1">'Bilal'</span><span class="p">),</span>
+   <span class="p">(</span><span class="s1">'Biology'</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="s1">'Roger'</span><span class="p">);</span>
+
+<span class="k">SELECT</span> 
+  <span class="n">RANK</span><span class="p">()</span> <span class="n">OVER</span> <span class="p">(</span><span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">course</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">mark</span> <span class="k">DESC</span><span class="p">)</span> <span class="k">AS</span> <span class="n">rank</span><span class="p">,</span> 
+  <span class="n">DENSE_RANK</span><span class="p">()</span> <span class="n">OVER</span> <span class="p">(</span><span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">course</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">mark</span> <span class="k">DESC</span><span class="p">)</span> <span class="k">AS</span> <span class="n">dense_rank</span><span class="p">,</span> 
+  <span class="n">ROW_NUMBER</span><span class="p">()</span> <span class="n">OVER</span> <span class="p">(</span><span class="n">PARTITION</span> <span class="k">BY</span> <span class="n">course</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">mark</span> <span class="k">DESC</span><span class="p">)</span> <span class="k">AS</span> <span class="n">row_num</span><span class="p">,</span> 
+  <span class="n">course</span><span class="p">,</span> <span class="n">mark</span><span class="p">,</span> <span class="n">name</span> 
+<span class="k">FROM</span> <span class="n">student</span> <span class="k">ORDER</span> <span class="k">BY</span> <span class="n">course</span><span class="p">,</span> <span class="n">mark</span> <span class="k">DESC</span><span class="p">;</span>
+<span class="o">+</span><span class="c1">------+------------+---------+---------+------+---------+</span>
+<span class="o">|</span> <span class="n">rank</span> <span class="o">|</span> <span class="n">dense_rank</span> <span class="o">|</span> <span class="n">row_num</span> <span class="o">|</span> <span class="n">course</span>  <span class="o">|</span> <span class="n">mark</span> <span class="o">|</span> <span class="n">name</span>    <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+------------+---------+---------+------+---------+</span>
+<span class="o">|</span>    <span class="mi">1</span> <span class="o">|</span>          <span class="mi">1</span> <span class="o">|</span>       <span class="mi">1</span> <span class="o">|</span> <span class="n">Biology</span> <span class="o">|</span>   <span class="mi">70</span> <span class="o">|</span> <span class="n">Roger</span>   <span class="o">|</span>
+<span class="o">|</span>    <span class="mi">2</span> <span class="o">|</span>          <span class="mi">2</span> <span class="o">|</span>       <span class="mi">2</span> <span class="o">|</span> <span class="n">Biology</span> <span class="o">|</span>   <span class="mi">60</span> <span class="o">|</span> <span class="n">Bilal</span>   <span class="o">|</span>
+<span class="o">|</span>    <span class="mi">1</span> <span class="o">|</span>          <span class="mi">1</span> <span class="o">|</span>       <span class="mi">1</span> <span class="o">|</span> <span class="n">Maths</span>   <span class="o">|</span>   <span class="mi">70</span> <span class="o">|</span> <span class="n">Voitto</span>  <span class="o">|</span>
+<span class="o">|</span>    <span class="mi">2</span> <span class="o">|</span>          <span class="mi">2</span> <span class="o">|</span>       <span class="mi">2</span> <span class="o">|</span> <span class="n">Maths</span>   <span class="o">|</span>   <span class="mi">60</span> <span class="o">|</span> <span class="n">Thulile</span> <span class="o">|</span>
+<span class="o">|</span>    <span class="mi">2</span> <span class="o">|</span>          <span class="mi">2</span> <span class="o">|</span>       <span class="mi">3</span> <span class="o">|</span> <span class="n">Maths</span>   <span class="o">|</span>   <span class="mi">60</span> <span class="o">|</span> <span class="n">Pritha</span>  <span class="o">|</span>
+<span class="o">|</span>    <span class="mi">4</span> <span class="o">|</span>          <span class="mi">3</span> <span class="o">|</span>       <span class="mi">4</span> <span class="o">|</span> <span class="n">Maths</span>   <span class="o">|</span>   <span class="mi">55</span> <span class="o">|</span> <span class="n">Chun</span>    <span class="o">|</span>
+<span class="o">+</span><span class="c1">------+------------+---------+---------+------+---------+</span></code></pre></figure>
+
+<p><a href="https://mariadb.com/kb/en/library/row_number/">출처</a></p>
+<h4 id="6참고문서">6.참고문서</h4>
+<p><a href="https://mariadb.com/resources/blog/connect-dead-long-live-cte-mariadb-server-102">링크 1</a></p>
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2018-06-26/mongodb-docker-compose" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2017-12-26/innodb-buffer-pull" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; hoyeon. <time datetime="2018-10-15 16:00:06 +0900">2018</time>
+      </span>
+    </footer>
+  </body>
+</html>

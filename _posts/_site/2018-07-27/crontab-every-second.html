@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      node를 사용한 초단위 cron 설정을 진행해보자 &middot; note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127067628-1"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127067628-1');
+  </script>
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        hoyeonUm
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2018-07-27 00:00:00 +0900">July 27, 2018</time>
+    
+  </div>
+
+  <h1 class="post-title">node를 사용한 초단위 cron 설정을 진행해보자</h1>
+  <div class="post-line"></div>
+
+  <h4 id="환경체크">환경체크</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#노드와 npm 설치 진행</span>
+node <span class="nt">-v</span>
+v8.9.3
+
+npm <span class="nt">-v</span>
+6.4.0</code></pre></figure>
+
+<h4 id="crontab-설치">crontab 설치</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">cd</span> /home/crontab
+<span class="c">#https://www.npmjs.com/package/cron</span>
+npm install cron</code></pre></figure>
+
+<h4 id="아래코드는-npm-홈페이지에-있는-샘플코드다">아래코드는 npm 홈페이지에 있는 샘플코드다.</h4>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">vim</span> <span class="nx">test</span><span class="p">.</span><span class="nx">js</span>
+
+<span class="kd">var</span> <span class="nx">CronJob</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'cron'</span><span class="p">).</span><span class="nx">CronJob</span><span class="p">;</span>
+<span class="k">new</span> <span class="nx">CronJob</span><span class="p">(</span><span class="s1">'* * * * * *'</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'You will see this message every second'</span><span class="p">);</span>
+<span class="p">},</span> <span class="kc">null</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="s1">'America/Los_Angeles'</span><span class="p">);</span>
+
+<span class="nx">node</span> <span class="nx">test</span><span class="p">.</span><span class="nx">js</span>
+
+<span class="nx">You</span> <span class="nx">will</span> <span class="nx">see</span> <span class="k">this</span> <span class="nx">message</span> <span class="nx">every</span> <span class="nx">second</span>
+<span class="nx">You</span> <span class="nx">will</span> <span class="nx">see</span> <span class="k">this</span> <span class="nx">message</span> <span class="nx">every</span> <span class="nx">second</span>
+<span class="nx">You</span> <span class="nx">will</span> <span class="nx">see</span> <span class="k">this</span> <span class="nx">message</span> <span class="nx">every</span> <span class="nx">second</span>
+<span class="p">....</span></code></pre></figure>
+
+<h4 id="npm-링크를타고-들어가보면-다음과-같이-설정-영역이-되어있다">npm 링크를타고 들어가보면 다음과 같이 설정 영역이 되어있다.</h4>
+<ul>
+  <li>Seconds: 0-59</li>
+  <li>Minutes: 0-59</li>
+  <li>Hours: 0-23</li>
+  <li>Day of Month: 1-31</li>
+  <li>Months: 0-11 (Jan-Dec)</li>
+  <li>Day of Week: 0-6 (Sun-Sat)</li>
+</ul>
+
+<h6 id="-리눅스-cron-설정보다--이-한개더많다-앞에는-optional-로-초단위-설정은-줘도-되고-안줘도-된다">-리눅스 cron 설정보다 * 이 한개더많다. 앞에는 optional 로 초단위 설정은 줘도 되고 안줘도 된다.</h6>
+
+<h4 id="이제-해당-크론탭-데몬이-죽었을때-다시-살려줄수있는-데몬을-활용해보자">이제 해당 크론탭 데몬이 죽었을때 다시 살려줄수있는 데몬을 활용해보자.</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#https://www.npmjs.com/package/forever</span>
+<span class="c">#전체적으로 유용하게 쓰일것같아 글로벌인스톨 설치하였다.</span>
+npm install forever <span class="nt">-g</span>
+
+forever <span class="nt">-l</span> /home/logs/forever/test.log <span class="nt">-a</span> start test.js
+
+<span class="nb">cat</span> /home/logs/forever/test.log
+You will see this message every second
+You will see this message every second
+You will see this message every second</code></pre></figure>
+
+<h6 id="다음은-내가자주-쓰는-옵션이다">다음은 내가자주 쓰는 옵션이다.</h6>
+<ul>
+  <li>-l 로그파일 위치</li>
+  <li>-a 로그파일 append</li>
+  <li>list (forever list) 현재목록</li>
+  <li>stop index (ex: stop 0) list 로 조회하여 해당 index 를 종료시킴</li>
+  <li>stopall 전체 종료</li>
+  <li>start 실행</li>
+  <li>restartall 전체 재실행</li>
+  <li>restart index (ex : restart 0) list 로 조회하여 해당 index 를 재시작시킴</li>
+  <li>-c (ex forever start -c “php” test.php (default 값은 node 이다)</li>
+</ul>
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2018-07-30/big-size-excel-on-php" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2018-06-26/mongodb-docker-compose" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; hoyeon. <time datetime="2018-10-15 16:00:06 +0900">2018</time>
+      </span>
+    </footer>
+  </body>
+</html>

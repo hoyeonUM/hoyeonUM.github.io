@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      MongoDB 를 docker로 세팅해보자 &middot; note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127067628-1"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127067628-1');
+  </script>
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        hoyeonUm
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2018-06-26 00:00:00 +0900">June 26, 2018</time>
+    
+  </div>
+
+  <h1 class="post-title">MongoDB 를 docker로 세팅해보자</h1>
+  <div class="post-line"></div>
+
+  
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">몽고디비를 로컬환경에 설치를 해야하는데 라우트서버와 샤드서버 콘피그서버를 설치하려니까 이것저것 해야할 부분들이 너무많아서 docker 로 설치하는 방법이 제일 빠를거 같아 docker 를 올려보았다.</code></pre></figure>
+
+<h3 id="기본-세팅">기본 세팅</h3>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#docker  설치</span>
+yum <span class="nt">-y</span> install docker
+
+<span class="c">#docker compose 설치</span>
+<span class="nb">sudo </span>curl <span class="nt">-L</span> https://github.com/docker/compose/releases/download/1.22.0/docker-compose-<span class="k">$(</span>uname <span class="nt">-s</span><span class="k">)</span>-<span class="k">$(</span>uname <span class="nt">-m</span><span class="k">)</span> <span class="nt">-o</span> /usr/local/bin/docker-compose
+<span class="nb">sudo </span>chmod +x /usr/local/bin/docker-compose
+docker-compose <span class="nt">--version</span>
+docker-compose version 1.22.0, build 1719ceb</code></pre></figure>
+
+<h3 id="compose-yaml-파일-생성">compose yaml 파일 생성</h3>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="c">#디렉토리 생성</span>
+mkdir /home/mongodb
+
+<span class="c">#파일생성</span>
+vim docker-compose.yaml
+
+version: <span class="s1">'2'</span>
+services:
+  mongorsn1:
+    container_name: mongors1n1
+    image: mongo
+    <span class="nb">command</span>: mongod <span class="nt">--shardsvr</span> <span class="nt">--replSet</span> mongors1 <span class="nt">--dbpath</span> /data/db <span class="nt">--port</span> 27017
+    ports:
+      - 27017:27017
+    expose:
+      - <span class="s2">"27017"</span>
+    environment:
+      TERM: xterm
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /mongo_cluster/data1:/data/db
+  mongors1n2:
+    container_name: mongors1n2
+    image: mongo
+    <span class="nb">command</span>: mongod <span class="nt">--shardsvr</span> <span class="nt">--replSet</span> mongors1 <span class="nt">--dbpath</span> /data/db <span class="nt">--port</span> 27017
+    ports:
+      - 27027:27017
+    expose:
+      - <span class="s2">"27017"</span>
+    environment:
+      TERM: xterm
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /mongo_cluster/data2:/data/db
+  mongors1n3:
+    container_name: mongors1n3
+    image: mongo
+    <span class="nb">command</span>: mongod <span class="nt">--shardsvr</span> <span class="nt">--replSet</span> mongors1 <span class="nt">--dbpath</span> /data/db <span class="nt">--port</span> 27017
+    ports:
+      - 27037:27017
+    expose:
+      - <span class="s2">"27017"</span>
+    environment:
+      TERM: xterm
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /mongo_cluster/data3:/data/db
+  mongocfg1:
+    container_name: mongocfg1
+    image: mongo
+    <span class="nb">command</span>: mongod <span class="nt">--configsvr</span> <span class="nt">--replSet</span> mongors1conf <span class="nt">--dbpath</span> /data/db <span class="nt">--port</span> 27017
+    environment:
+      TERM: xterm
+    expose:
+      - <span class="s2">"27017"</span>
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /mongo_cluster/config1:/data/db
+  mongocfg2:
+    container_name: mongocfg2
+    image: mongo
+    <span class="nb">command</span>: mongod <span class="nt">--configsvr</span> <span class="nt">--replSet</span> mongors1conf <span class="nt">--dbpath</span> /data/db <span class="nt">--port</span> 27017
+    environment:
+      TERM: xterm
+    expose:
+      - <span class="s2">"27017"</span>
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /mongo_cluster/config2:/data/db
+  mongocfg3:
+    container_name: mongocfg3
+    image: mongo
+    <span class="nb">command</span>: mongod <span class="nt">--configsvr</span> <span class="nt">--replSet</span> mongors1conf <span class="nt">--dbpath</span> /data/db <span class="nt">--port</span> 27017
+    environment:
+      TERM: xterm
+    expose:
+      - <span class="s2">"27017"</span>
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /mongo_cluster/config3:/data/db
+  mongos1:
+    container_name: mongos1
+    image: mongo
+    depends_on:
+      - mongocfg1
+      - mongocfg2
+    <span class="nb">command</span>: mongos <span class="nt">--configdb</span> mongors1conf/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 <span class="nt">--port</span> 27017 <span class="nt">--bind_ip_all</span>
+    ports:
+      - 27019:27017
+    expose:
+      - <span class="s2">"27017"</span>
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+  mongos2:
+    container_name: mongos2
+    image: mongo
+    depends_on:
+      - mongocfg1
+      - mongocfg2
+    <span class="nb">command</span>: mongos <span class="nt">--configdb</span> mongors1conf/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 <span class="nt">--port</span> 27017 <span class="nt">--bind_ip_all</span>
+    ports:
+      - 27020:27017
+    expose:
+      - <span class="s2">"27017"</span>
+    volumes:
+      - /etc/localtime:/etc/localtime:ro</code></pre></figure>
+
+<h3 id="실행">실행</h3>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker-compose up <span class="nt">-d</span>
+<span class="sb">`</span>
+docker ps <span class="nt">-a</span>
+CONTAINER ID  IMAGE    COMMAND                  CREATED      STATUS       PORTS                      NAMES
+051d3f0e87b0  mongo    <span class="s2">"docker-entrypoint..."</span>   2 hours ago  Up 2 hours   0.0.0.0:27020-&gt;27017/tcp   mongos2
+e8e29446fa17  mongo    <span class="s2">"docker-entrypoint..."</span>   2 hours ago  Up 2 hours   0.0.0.0:27019-&gt;27017/tcp   mongos1
+a031815d22a   mongo    <span class="s2">"docker-entrypoint..."</span>   4 hours ago  Up 3 hours   27017/tcp                  mongocfg2
+e56c1111482   mongo    <span class="s2">"docker-entrypoint..."</span>   4 hours ago  Up 3 hours   27017/tcp                  mongocfg1
+858dc7463fa   mongo    <span class="s2">"docker-entrypoint..."</span>   4 hours ago  Up 3 hours   27017/tcp                  mongocfg3
+934b4fe8f8a8  mongo    <span class="s2">"docker-entrypoint..."</span>   4 hours ago  Up 3 hours   0.0.0.0:27037-&gt;27017/tcp   mongors1n3
+0181076d2845  mongo    <span class="s2">"docker-entrypoint..."</span>   4 hours ago  Up 3 hours   0.0.0.0:27027-&gt;27017/tcp   mongors1n2
+cfdea54a34c9  mongo    <span class="s2">"docker-entrypoint..."</span>   4 hours ago  Up 3 hours   0.0.0.0:27017-&gt;27017/tcp   mongors1n1
+<span class="sb">`</span>
+
+<span class="c">#콘피그 서버 replica set 구성</span>
+docker <span class="nb">exec</span> <span class="nt">-it</span> mongocfg1 bash <span class="nt">-c</span> <span class="s2">"echo 'rs.initiate({_id: </span><span class="se">\"</span><span class="s2">mongors1conf</span><span class="se">\"</span><span class="s2">,configsvr: true, members: [{ _id : 0, host : </span><span class="se">\"</span><span class="s2">mongocfg1</span><span class="se">\"</span><span class="s2"> },{ _id : 1, host : </span><span class="se">\"</span><span class="s2">mongocfg2</span><span class="se">\"</span><span class="s2"> }, { _id : 2, host : </span><span class="se">\"</span><span class="s2">mongocfg3</span><span class="se">\"</span><span class="s2"> }]})' | mongo"</span>
+<span class="c">#콘피그서버 체크</span>
+docker <span class="nb">exec</span> <span class="nt">-it</span> mongocfg1 bash <span class="nt">-c</span> <span class="s2">"echo 'rs.status()' | mongo"</span>
+<span class="c">#위와 같은명령어로 확인시 members 노드에 PRIMARY 1개와 SECONDARY 2개로 멤버가 구성되있는것을 확인할수있다.</span>
+
+<span class="c">#샤드 서버 replica set 구성</span>
+docker <span class="nb">exec</span> <span class="nt">-it</span> mongors1n1 bash <span class="nt">-c</span> <span class="s2">"echo 'rs.initiate({_id : </span><span class="se">\"</span><span class="s2">mongors1</span><span class="se">\"</span><span class="s2">, members: [{ _id : 0, host : </span><span class="se">\"</span><span class="s2">mongors1n1</span><span class="se">\"</span><span class="s2"> },{ _id : 1, host : </span><span class="se">\"</span><span class="s2">mongors1n2</span><span class="se">\"</span><span class="s2"> },{ _id : 2, host : </span><span class="se">\"</span><span class="s2">mongors1n3</span><span class="se">\"</span><span class="s2"> }]})' | mongo"</span>
+<span class="c">#샤드서버 체크</span>
+docker <span class="nb">exec</span> <span class="nt">-it</span> mongors1n1 bash <span class="nt">-c</span> <span class="s2">"echo 'rs.status()' | mongo"</span>
+<span class="c">#위와 같은 명령어로 확인시 members 노드에 PRIMARY 1개와 SECONDARY 2개로 멤버가 구성되있는것을 확인할수있다.</span>
+
+<span class="c">#라우트 서버에 샤드서버 추가</span>
+docker <span class="nb">exec</span> <span class="nt">-it</span> mongos1 bash <span class="nt">-c</span> <span class="s2">"echo 'sh.addShard(</span><span class="se">\"</span><span class="s2">mongors1/mongors1n1</span><span class="se">\"</span><span class="s2">)' | mongo "</span>
+ 
+<span class="c">#라우트 서버 확인</span>
+docker <span class="nb">exec</span> <span class="nt">-it</span> mongos1 bash <span class="nt">-c</span> <span class="s2">"echo 'sh.status()' | mongo "</span>
+<span class="sb">`</span>
+ shards:
+        <span class="o">{</span>  <span class="s2">"_id"</span> : <span class="s2">"mongors1"</span>,  <span class="s2">"host"</span> : <span class="s2">"mongors1/mongors1n1:27017,mongors1n2:27017,mongors1n3:27017"</span>,  <span class="s2">"state"</span> : 1 <span class="o">}</span>
+<span class="sb">`</span>
+<span class="c">#테스트를 하던도중  세컨드리에서 검색을 하는 도중 다음과같은 오류가 발생하였다.</span>
+<span class="sb">`</span>
+mongors1:SECONDARY&gt; db.test.count<span class="o">()</span>
+
+2018-06-26T14:04:40.682+0900 E QUERY    <span class="o">[</span>js] Error: count failed: <span class="o">{</span>
+        <span class="s2">"operationTime"</span> : Timestamp<span class="o">(</span>1533099879, 1<span class="o">)</span>,
+        <span class="s2">"ok"</span> : 0,
+        <span class="s2">"errmsg"</span> : <span class="s2">"not master and slaveOk=false"</span>,
+        <span class="s2">"code"</span> : 13435,
+        <span class="s2">"codeName"</span> : <span class="s2">"NotMasterNoSlaveOk"</span>,
+        <span class="s2">"</span><span class="nv">$gleStats</span><span class="s2">"</span> : <span class="o">{</span>
+                <span class="s2">"lastOpTime"</span> : Timestamp<span class="o">(</span>0, 0<span class="o">)</span>,
+                <span class="s2">"electionId"</span> : ObjectId<span class="o">(</span><span class="s2">"000000000000000000000000"</span><span class="o">)</span>
+        <span class="o">}</span>,
+        <span class="s2">"lastCommittedOpTime"</span> : Timestamp<span class="o">(</span>1533099879, 1<span class="o">)</span>,
+        <span class="s2">"</span><span class="nv">$configServerState</span><span class="s2">"</span> : <span class="o">{</span>
+                <span class="s2">"opTime"</span> : <span class="o">{</span>
+                        <span class="s2">"ts"</span> : Timestamp<span class="o">(</span>1533099870, 2<span class="o">)</span>,
+                        <span class="s2">"t"</span> : NumberLong<span class="o">(</span>3<span class="o">)</span>
+                <span class="o">}</span>
+        <span class="o">}</span>,
+        <span class="s2">"</span><span class="nv">$clusterTime</span><span class="s2">"</span> : <span class="o">{</span>
+                <span class="s2">"clusterTime"</span> : Timestamp<span class="o">(</span>1533099879, 1<span class="o">)</span>,
+                <span class="s2">"signature"</span> : <span class="o">{</span>
+                        <span class="s2">"hash"</span> : BinData<span class="o">(</span>0,<span class="s2">"AAAAAAAAAAAAAAAAAAAAAAAAAAA="</span><span class="o">)</span>,
+                        <span class="s2">"keyId"</span> : NumberLong<span class="o">(</span>0<span class="o">)</span>
+                <span class="o">}</span>
+        <span class="o">}</span>
+
+<span class="sb">`</span>
+<span class="c">#rs.slaveOk()</span>
+<span class="c">#해당 명령어로 해결할수있다.</span></code></pre></figure>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php">mongos 1,2 는 라우터서버다.
+라우트서버에서는 모든 요청을 받는다.
+php 에서  https://packagist.org/packages/mongodb/mongodb 해당 라이브러리를 사용한다면 다음과 같은 코드를 사용한다
+해당 코드 순서의 위치와는 상관없이 랜덤하게 access 하며 27020 포트가 죽었을때는 27019 로 요청하는것을 확인하였다. 아래 ngrep sample 참조.
+
+mongocfg 1,2,3 은 컨피그 서버다.
+컨피그서버에서는 shard 에 어떻게 데이터가 분산되어있는지에 대한 메타정보를 가지고있는 서버이다. 메타정보가 있기때문에 라우터에서 컨피그서버에 요청후 샤드서버에서 데이터를 가져올수 있게된다.
+
+mongors1n1,2,3 은 샤드서버다.
+샤드서버는 데이터를 수직 혹은 수평으로 데이터를 분산처리하여 저장한다. 해당 서버늘리면 scale-out 이 가능해지고, chunk 라는 단위로 데이터가 파일이 쪼개진다.
+
+<span class="cp">&lt;?php</span>
+<span class="k">use</span> <span class="nx">MongoDB\Client</span><span class="p">;</span>
+<span class="k">new</span> <span class="nx">Client</span><span class="p">(</span><span class="s1">'mongodb://127.0.0.1:27020,127.0.0.1:27019'</span><span class="p">);</span></code></pre></figure>
+
+<h3 id="프라이머리-선출-테스트">프라이머리 선출 테스트</h3>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker ps <span class="nt">-a</span>
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                      NAMES
+051d3f0e87b0        mongo               <span class="s2">"docker-entrypoint..."</span>   3 hours ago         Up 3 hours          0.0.0.0:27020-&gt;27017/tcp   mongos2
+e8e29446fa17        mongo               <span class="s2">"docker-entrypoint..."</span>   3 hours ago         Up 3 hours          0.0.0.0:27019-&gt;27017/tcp   mongos1
+a031815d22a9        mongo               <span class="s2">"docker-entrypoint..."</span>   5 hours ago         Up 4 hours          27017/tcp                  mongocfg2
+e56c11114823        mongo               <span class="s2">"docker-entrypoint..."</span>   5 hours ago         Up 4 hours          27017/tcp                  mongocfg1
+858dc7463f0a        mongo               <span class="s2">"docker-entrypoint..."</span>   5 hours ago         Up 4 hours          27017/tcp                  mongocfg3
+934b4fe8f8a8        mongo               <span class="s2">"docker-entrypoint..."</span>   5 hours ago         Up 4 hours          0.0.0.0:27037-&gt;27017/tcp   mongors1n3
+0181076d2845        mongo               <span class="s2">"docker-entrypoint..."</span>   5 hours ago         Up 4 hours          0.0.0.0:27027-&gt;27017/tcp   mongors1n2
+cfdea54a34c9        mongo               <span class="s2">"docker-entrypoint..."</span>   5 hours ago         Up 4 hours          0.0.0.0:27017-&gt;27017/tcp   mongors1n1
+3d6f0cc60b47        centos              <span class="s2">"/bin/bash"</span>              15 hours ago        Up 5 hours                                     forcommit
+
+<span class="c"># mongors1n1  얘가 프라이머리 샤드</span>
+docker <span class="nb">kill </span>mongors1n1
+
+docker ps <span class="nt">-a</span>
+docker ps <span class="nt">-a</span>         
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                       PORTS                      NAMES
+051d3f0e87b0        mongo               <span class="s2">"docker-entrypoint..."</span>   3 hours ago         Up 3 hours                   0.0.0.0:27020-&gt;27017/tcp   mongos2
+e8e29446fa17        mongo               <span class="s2">"docker-entrypoint..."</span>   3 hours ago         Up 3 hours                   0.0.0.0:27019-&gt;27017/tcp   mongos1
+a031815d22a9        mongo               <span class="s2">"docker-entrypoint..."</span>   5 hours ago         Up 4 hours                   27017/tcp                  mongocfg2
+e56c11114823        mongo               <span class="s2">"docker-entrypoint..."</span>   5 hours ago         Up 4 hours                   27017/tcp                  mongocfg1
+858dc7463f0a        mongo               <span class="s2">"docker-entrypoint..."</span>   5 hours ago         Up 4 hours                   27017/tcp                  mongocfg3
+934b4fe8f8a8        mongo               <span class="s2">"docker-entrypoint..."</span>   5 hours ago         Up 4 hours                   0.0.0.0:27037-&gt;27017/tcp   mongors1n3
+0181076d2845        mongo               <span class="s2">"docker-entrypoint..."</span>   5 hours ago         Up 4 hours                   0.0.0.0:27027-&gt;27017/tcp   mongors1n2
+cfdea54a34c9        mongo               <span class="s2">"docker-entrypoint..."</span>   5 hours ago         Exited <span class="o">(</span>137<span class="o">)</span> 6 seconds ago                              mongors1n1
+3d6f0cc60b47        centos              <span class="s2">"/bin/bash"</span>              15 hours ago        Up 5 hours                                              forcommit
+ 
+ 
+<span class="c">#mongo --port 27027 (mongors1n2 접속)</span>
+2018-06-26T11:03:58.842+0900 I CONTROL  <span class="o">[</span>initandlisten]
+mongors1:PRIMARY
+
+ 
+SECONDARY에서 PRIMARY로 바뀌어있는걸 확인할수있다.</code></pre></figure>
+
+<h3 id="라우터-테스트">라우터 테스트</h3>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="k">use</span> <span class="nx">MongoDB\Client</span>
+ 
+ 
+<span class="nv">$host</span> <span class="o">=</span> <span class="s1">'mongodb://xxxx:27020,xxxx:27019;
+$this-&gt;client = new Client($host);
+$this-&gt;collection = $this-&gt;client-&gt;selectCollection('</span><span class="nx">testDB</span><span class="s1">', '</span><span class="nx">testCollection</span><span class="err">'</span><span class="p">);</span>
+ 
+ 
+<span class="k">for</span> <span class="p">(</span><span class="nv">$i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="nv">$i</span> <span class="o">&lt;=</span> <span class="mi">1000</span><span class="p">;</span> <span class="nv">$i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">collection</span><span class="o">-&gt;</span><span class="na">count</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="다음은-ngrep-으로-서버로-요청오는-패킷을-잡아봤다">다음은 ngrep 으로 서버로 요청오는 패킷을 잡아봤다.</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">yum install <span class="nt">-y</span> ngrep <span class="c">#미설치시</span>
+<span class="sb">`</span>
+ngrep port 27019
+ 
+interface: enp0s25 <span class="o">(</span>xxx.xxx.xxx.xxx/255.255.255.255<span class="o">)</span>
+filter: <span class="o">(</span> port 27019 <span class="o">)</span> and <span class="o">((</span>ip <span class="o">||</span> ip6<span class="o">)</span> <span class="o">||</span> <span class="o">(</span>vlan <span class="o">&amp;&amp;</span> <span class="o">(</span>ip <span class="o">||</span> ip6<span class="o">)))</span>
+<span class="c">###</span>
+T xxx.xxx.xxx.xxx:58114 -&gt; xxx.xxx.xxx.xxx:27019 <span class="o">[</span>AP]
+  O...................admin.<span class="nv">$cmd</span>.........<span class="o">(</span>....isMaster......client......driver.C....name.....mongoc / ext-mongodb:PHP..version.....1.9.2 / 1.4.0...os.Y....type.....Windows
+  ..name.....Windows..version.....10.0 <span class="o">(</span>17134<span class="o">)</span>..architecture.....x86...platform.@...cfg<span class="o">=</span>0x402a0e9 <span class="nv">CC</span><span class="o">=</span>MSVC 1912 <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">""</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">""</span> / PHP 7.2.1-dev...compression.......  
+<span class="c">##</span>
+T xxx.xxx.xxx.xxx:27019 -&gt; xxx.xxx.xxx.xxx:58114 <span class="o">[</span>AP]
+  s...................................O....ismaster...msg.....isdbgrid..maxBsonObjectSize......maxMessageSizeBytes..l...maxWriteBatchSize......localTime.....d....logicalSe
+  ssionTimeoutMinutes......maxWireVersion......minWireVersion......ok........?.operationTime.......b[.<span class="nv">$clusterTime</span>.X....clusterTime.......b[.signature.3....hash...........
+  ................keyId............ 
+.......생략
+ 
+ 
+ 
+ 
+ngrep port 27020
+ 
+interface: enp0s25 <span class="o">(</span>xxx.xxx.xxx.xxx/255.255.255.255<span class="o">)</span>
+filter: <span class="o">(</span> port 27020 <span class="o">)</span> and <span class="o">((</span>ip <span class="o">||</span> ip6<span class="o">)</span> <span class="o">||</span> <span class="o">(</span>vlan <span class="o">&amp;&amp;</span> <span class="o">(</span>ip <span class="o">||</span> ip6<span class="o">)))</span>
+<span class="c">###</span>
+T xxx.xxx.xxx.xxx:58113 -&gt; xxx.xxx.xxx.xxx:27020 <span class="o">[</span>A]
+  ......                                                                                                                                                                  
+<span class="c">#</span>
+T xxx.xxx.xxx.xxx:58113 -&gt; xxx.xxx.xxx.xxx:27020 <span class="o">[</span>AP]
+  O...................admin.<span class="nv">$cmd</span>.........<span class="o">(</span>....isMaster......client......driver.C....name.....mongoc / ext-mongodb:PHP..version.....1.9.2 / 1.4.0...os.Y....type.....Windows
+  ..name.....Windows..version.....10.0 <span class="o">(</span>17134<span class="o">)</span>..architecture.....x86...platform.@...cfg<span class="o">=</span>0x402a0e9 <span class="nv">CC</span><span class="o">=</span>MSVC 1912 <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">""</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">""</span> / PHP 7.2.1-dev...compression.......  
+<span class="c">##</span>
+.......생략
+<span class="sb">`</span></code></pre></figure>
+
+<h4 id="양쪽-라우터로-번갈아가면서-요청이-오는것을-확인할수있었다">양쪽 라우터로 번갈아가면서 요청이 오는것을 확인할수있었다.</h4>
+
+<h4 id="라우터를-강제로-죽여서-테스트를-진행해보았다">라우터를 강제로 죽여서 테스트를 진행해보았다.</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">docker <span class="nb">kill </span>mongos1
+mongos1
+docker ps <span class="nt">-a</span>      
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS                       PORTS                      NAMES
+051d3f0e87b0        mongo               <span class="s2">"docker-entrypoint..."</span>   4 hours ago        Up 4 hours                  0.0.0.0:27020-&gt;27017/tcp   mongos2
+e8e29446fa17        mongo               <span class="s2">"docker-entrypoint..."</span>   4 hours ago        Exited <span class="o">(</span>137<span class="o">)</span> 3 seconds ago                              mongos1
+a031815d22a9        mongo               <span class="s2">"docker-entrypoint..."</span>   4 hours ago        Up 4 hours                  27017/tcp                  mongocfg2
+e56c11114823        mongo               <span class="s2">"docker-entrypoint..."</span>   4 hours ago        Up 4 hours                  27017/tcp                  mongocfg1
+858dc7463f0a        mongo               <span class="s2">"docker-entrypoint..."</span>   4 hours ago        Up 4 hours                  27017/tcp                  mongocfg3
+934b4fe8f8a8        mongo               <span class="s2">"docker-entrypoint..."</span>   4 hours ago        Up 4 hours                  0.0.0.0:27037-&gt;27017/tcp   mongors1n3
+0181076d2845        mongo               <span class="s2">"docker-entrypoint..."</span>   4 hours ago        Up 4 hours                  0.0.0.0:27027-&gt;27017/tcp   mongors1n2
+cfdea54a34c9        mongo               <span class="s2">"docker-entrypoint..."</span>   4 hours ago        Up 4 hours                  0.0.0.0:27017-&gt;27017/tcp   mongors1n1o
+
+
+<span class="c">#ngrep</span>
+<span class="sb">`</span>
+ngrep port 27020
+ 
+ 
+interface: enp0s25 <span class="o">(</span>xxx.xxx.xxx.xxx/255.255.255.255<span class="o">)</span>
+filter: <span class="o">(</span> port 27020 <span class="o">)</span> and <span class="o">((</span>ip <span class="o">||</span> ip6<span class="o">)</span> <span class="o">||</span> <span class="o">(</span>vlan <span class="o">&amp;&amp;</span> <span class="o">(</span>ip <span class="o">||</span> ip6<span class="o">)))</span>
+<span class="c">###</span>
+T xxx.xxx.xxx.xxx:60823 -&gt; xxx.xxx.xxx.xxx:27020 <span class="o">[</span>A]
+  ......
+<span class="c">#</span>
+T xxx.xxx.xxx.xxx:60823 -&gt; xxx.xxx.xxx.xxx:27020 <span class="o">[</span>AP]
+  O...................admin.<span class="nv">$cmd</span>.........<span class="o">(</span>....isMaster......client......driver.C....name.....mongoc / ext-mongodb:PHP..version.....1.9.2 / 1.4.0...os.Y....type.....Windows
+  ..name.....Windows..version.....10.0 <span class="o">(</span>17134<span class="o">)</span>..architecture.....x86...platform.@...cfg<span class="o">=</span>0x402a0e9 <span class="nv">CC</span><span class="o">=</span>MSVC 1912 <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">""</span> <span class="nv">LDFLAGS</span><span class="o">=</span><span class="s2">""</span> / PHP 7.2.1-dev...compression.......
+<span class="c">##</span>
+T xxx.xxx.xxx.xxx:27020 -&gt; xxx.xxx.xxx.xxx:60823 <span class="o">[</span>AP]
+  s...G...............................O....ismaster...msg.....isdbgrid..maxBsonObjectSize......maxMessageSizeBytes..l...maxWriteBatchSize......localTime.....d....logicalSe
+  ssionTimeoutMinutes......maxWireVersion......minWireVersion......ok........?.operationTime.....C.b[.<span class="nv">$clusterTime</span>.X....clusterTime.....C.b[.signature.3....hash...........
+  ................keyId............
+ 
+ 
+ 
+ 
+ngrep port 27019
+interface: enp0s25 <span class="o">(</span>xxx.xxx.xxx.xxx/255.255.255.255<span class="o">)</span>
+filter: <span class="o">(</span> port 27019 <span class="o">)</span> and <span class="o">((</span>ip <span class="o">||</span> ip6<span class="o">)</span> <span class="o">||</span> <span class="o">(</span>vlan <span class="o">&amp;&amp;</span> <span class="o">(</span>ip <span class="o">||</span> ip6<span class="o">)))</span>
+<span class="c">####################################################################################</span>
+<span class="sb">`</span>
+ 
+<span class="c">#위와같이 mongos1 라우터로는 접근을 시도하나 접속되지 않아 mongos2 라우터로 요청하는것을 확인할수있다.</span></code></pre></figure>
+
+<h4 id="비고">비고</h4>
+<h5 id="hash-mark--는-ngrep-에서-요청이-왔을때-표시해줌-ngrep--q-is-be-quiet-dont-print-packet-reception-hash-marks">hash mark (#) 는 ngrep 에서 요청이 왔을때 표시해줌 ngrep (-q is be quiet (don’t print packet reception hash marks.)</h5>
+<p><a href="https://dzone.com/articles/composing-a-sharded-mongodb-on-docker">참조링크</a></p>
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2018-07-27/crontab-every-second" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2018-03-05/mariadb-connectedby" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; hoyeon. <time datetime="2018-10-15 16:00:06 +0900">2018</time>
+      </span>
+    </footer>
+  </body>
+</html>

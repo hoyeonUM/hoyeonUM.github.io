@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      PHP 대용량 엑셀다운로드 &middot; note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127067628-1"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127067628-1');
+  </script>
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        hoyeonUm
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2018-07-30 00:00:00 +0900">July 30, 2018</time>
+    
+  </div>
+
+  <h1 class="post-title">PHP 대용량 엑셀다운로드</h1>
+  <div class="post-line"></div>
+
+  <h4 id="소개">소개</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">300 백만건 이상의 엑셀 다운로드 파일 요청이 들어와서 기능을 검토하던 도중 다운로드 크기가 200MB 를 넘어 버리는 현상이 발생해 서버 설정에 잡아둔 메모리를 초과하는 현상이 나타났다. ini_set 설정으로 ini_set<span class="o">(</span><span class="s1">'memory_limit'</span>, <span class="nt">-1</span><span class="o">)</span> 로 진행 하려했지만 서버에 무리가 갈거 같아서 라이브러리들을 찾는 도중 괜찮은 라이브러리가 있어 메모해둡니다.
+
+공식 홈페이지에서는 데이터 기록시 한번에 한줄 혹은 여러줄씩 데이터를 읽어서 메모리에 저장해 둔다음 파일을 쓰고 메모리를 해제 하는 방식을 채택한다. <span class="o">(</span>읽기 기능도 마찬가지로 한줄 혹은 여러줄씩 데이터를 읽어오고 해제 한다고 합니다.<span class="o">)</span></code></pre></figure>
+
+<p><a href="https://github.com/box/spout">github</a></p>
+
+<h4 id="공식-홈페이지-code">공식 홈페이지 CODE</h4>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="nx">composer</span> <span class="k">require</span> <span class="nx">box</span><span class="o">/</span><span class="nx">spout</span>
+
+<span class="k">use</span> <span class="nx">Box\Spout\Writer\WriterFactory</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Box\Spout\Common\Type</span><span class="p">;</span>
+
+<span class="nv">$writer</span> <span class="o">=</span> <span class="nx">WriterFactory</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="nx">Type</span><span class="o">::</span><span class="na">XLSX</span><span class="p">);</span> <span class="c1">// for XLSX files
+//$writer = WriterFactory::create(Type::CSV); // for CSV files
+//$writer = WriterFactory::create(Type::ODS); // for ODS files
+</span>
+<span class="nv">$writer</span><span class="o">-&gt;</span><span class="na">openToFile</span><span class="p">(</span><span class="nv">$filePath</span><span class="p">);</span> <span class="c1">// write data to a file or to a PHP stream
+//$writer-&gt;openToBrowser($fileName); // stream data directly to the browser
+</span>
+<span class="nv">$writer</span><span class="o">-&gt;</span><span class="na">addRow</span><span class="p">(</span><span class="nv">$singleRow</span><span class="p">);</span> <span class="c1">// add a row at a time
+</span><span class="nv">$writer</span><span class="o">-&gt;</span><span class="na">addRows</span><span class="p">(</span><span class="nv">$multipleRows</span><span class="p">);</span> <span class="c1">// add multiple rows at a time
+</span>
+<span class="nv">$writer</span><span class="o">-&gt;</span><span class="na">close</span><span class="p">();</span></code></pre></figure>
+
+<h4 id="db-연동">DB 연동</h4>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="k">use</span> <span class="nx">Box\Spout\Writer\WriterFactory</span><span class="p">;</span>
+<span class="k">use</span> <span class="nx">Box\Spout\Common\Type</span><span class="p">;</span>
+
+<span class="c1">//데이터를 전부 가져오지 않고 fetch 처리하여 순차적으로 읽어들여옴
+</span><span class="nv">$list</span> <span class="o">=</span> <span class="nv">$db</span><span class="o">-&gt;</span><span class="na">fetch</span><span class="p">();</span>
+
+<span class="nv">$writer</span> <span class="o">=</span> <span class="nx">WriterFactory</span><span class="o">::</span><span class="na">create</span><span class="p">(</span><span class="nx">Type</span><span class="o">::</span><span class="na">XLSX</span><span class="p">);</span>
+<span class="nv">$writer</span><span class="o">-&gt;</span><span class="na">openToFile</span><span class="p">(</span><span class="s1">'/home/tmp/test.xls'</span><span class="p">);</span>
+<span class="nv">$writer</span><span class="o">-&gt;</span><span class="na">addRow</span><span class="p">([</span>
+            <span class="s1">'이름'</span><span class="p">,</span>
+            <span class="s1">'전화번호'</span><span class="p">,</span>
+            <span class="s1">'성별'</span><span class="p">,</span>
+            <span class="s1">'직급'</span><span class="p">,</span>
+        <span class="p">]);</span>
+
+<span class="k">foreach</span> <span class="p">(</span><span class="nv">$list</span> <span class="k">as</span> <span class="nv">$row</span><span class="p">)</span> <span class="p">{</span>
+<span class="nv">$writer</span><span class="o">-&gt;</span><span class="na">addRow</span><span class="p">([</span>
+	<span class="nv">$row</span><span class="p">[</span><span class="s1">'name'</span><span class="p">],</span>
+	<span class="nv">$row</span><span class="p">[</span><span class="s1">'tel'</span><span class="p">],</span>
+	<span class="nv">$row</span><span class="p">[</span><span class="s1">'sex'</span><span class="p">],</span>
+	<span class="nv">$row</span><span class="p">[</span><span class="s1">'position'</span><span class="p">],</span>
+<span class="p">]);</span>
+<span class="p">}</span>
+<span class="nv">$writer</span><span class="o">-&gt;</span><span class="na">close</span><span class="p">();</span>
+<span class="o">//</span><span class="nb">file</span> <span class="nx">download</span><span class="o">...</span> <span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">tmp</span><span class="o">/</span><span class="nx">test</span><span class="o">.</span><span class="nx">xls</span></code></pre></figure>
+
+<p>아직까진 넓이 지정 기능이 없다.
+넓이 지정을 위해서 <a href="https://github.com/box/spout/pull/532/files">pull request</a> 를 참조하여 확장해 사용하였다.</p>
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2018-08-17/php-redis" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2018-07-27/crontab-every-second" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; hoyeon. <time datetime="2018-10-15 16:00:06 +0900">2018</time>
+      </span>
+    </footer>
+  </body>
+</html>

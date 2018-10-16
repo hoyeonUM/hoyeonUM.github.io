@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      PHP redis 연동 &middot; note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127067628-1"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127067628-1');
+  </script>
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        hoyeonUm
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2018-08-17 00:00:00 +0900">August 17, 2018</time>
+    
+  </div>
+
+  <h1 class="post-title">PHP redis 연동</h1>
+  <div class="post-line"></div>
+
+  <h4 id="설치">설치</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">yum install redis 
+systemctl start redis
+
+<span class="nb">cd</span> ./workspace
+
+composer require chrisboulton/php-resque</code></pre></figure>
+
+<p><a href="https://github.com/chrisboulton/php-resque">github</a></p>
+
+<h4 id="pushphp">Push.php</h4>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="nx">\Resque</span><span class="o">::</span><span class="na">setBackend</span><span class="p">(</span><span class="s1">'localhost:6379'</span><span class="p">);</span>
+<span class="nv">$args</span> <span class="o">=</span> <span class="p">[</span> 
+        <span class="s1">'idx'</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="p">];</span>
+<span class="nx">Resque</span><span class="o">::</span><span class="na">enqueue</span><span class="p">(</span><span class="s1">'queue-name'</span><span class="p">,</span> <span class="nx">Jobs</span><span class="o">::</span><span class="na">class</span><span class="p">,</span> <span class="nv">$args</span><span class="p">);</span></code></pre></figure>
+
+<h4 id="jobsphp">Jobs.php</h4>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="cp">&lt;?php</span>
+<span class="k">class</span> <span class="nc">Jobs</span>
+<span class="p">{</span>
+
+	<span class="k">public</span> <span class="k">function</span> <span class="nf">perform</span><span class="p">()</span>
+	<span class="p">{</span>
+		<span class="nv">$idx</span> <span class="o">=</span> <span class="nv">$this</span><span class="o">-&gt;</span><span class="na">args</span><span class="p">[</span><span class="s1">'idx'</span><span class="p">];</span> <span class="c1">//Push.php 에서 보낸 idx
+</span>		<span class="c1">//.. code
+</span>	<span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>Push.php 를 실행시켜 설치한 서버 Redis 에 데이터를 쌓게 되고
+Jobs 를 호출함으로써 큐에 쌓여진데로 순차적으로 실행하게된다.</p>
+
+<h4 id="redis-cli">redis-cli</h4>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>redis-cli 
+127.0.0.1:6379&gt; llen resque:queue:queue-name
+3</code></pre></figure>
+
+<p>이제 worker (큐 순차처리) 를 사용하여야 하는데 <a href="/2018-07-27/crontab-every-second">foreverd</a> 데몬을 활용하여 실행시켜보자</p>
+
+<p>실행시키는 bin/resque file 은 composer 설치 디렉토리에 포함되어있다.</p>
+<h4 id="forever-추가">forever 추가</h4>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">VERBOSE</span><span class="o">=</span>1 <span class="nv">QUEUE</span><span class="o">=</span>queue-name  forever <span class="nt">-l</span> /home/tmp/logs.log <span class="nt">-a</span> start <span class="nt">-c</span> <span class="s2">"sh "</span> bin/resque</code></pre></figure>
+
+<h6 id="verbose--기본디버그-추가--queue--큐이름">VERBOSE = 기본디버그 추가,  QUEUE = 큐이름</h6>
+
+<h4 id="redis-cli-큐-실행이후">redis-cli 큐 실행이후</h4>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash"><span class="nv">$ </span>redis-cli
+127.0.0.1:6379&gt; llen resque:queue:queue-name
+0</code></pre></figure>
+
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2018-08-24/php-check-korean" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2018-07-30/big-size-excel-on-php" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; hoyeon. <time datetime="2018-10-15 16:00:06 +0900">2018</time>
+      </span>
+    </footer>
+  </body>
+</html>

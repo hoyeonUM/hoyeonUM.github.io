@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      github 블로그를 jekyll 를 통해 관리해보자 &middot; note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127067628-1"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127067628-1');
+  </script>
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        hoyeonUm
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2017-12-26 00:00:00 +0900">December 26, 2017</time>
+    
+  </div>
+
+  <h1 class="post-title">github 블로그를 jekyll 를 통해 관리해보자</h1>
+  <div class="post-line"></div>
+
+  <h3 id="환경-centos7">환경 centos7</h3>
+
+<h4 id="1필수패키지-설치">1.필수패키지 설치</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">yum install gcc-c++ patch readline readline-devel zlib zlib-devel
+yum install libyaml-devel libffi-devel openssl-devel make
+yum install bzip2 autoconf automake libtool bison iconv-devel sqlite-devel</code></pre></figure>
+
+<h4 id="2rvm-설치">2.RVM 설치</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">curl <span class="nt">-sSL</span> https://rvm.io/mpapis.asc | gpg <span class="nt">--import</span> -
+curl <span class="nt">-L</span> get.rvm.io | bash <span class="nt">-s</span> stable
+<span class="nb">source</span> /etc/profile.d/rvm.sh
+rvm reload</code></pre></figure>
+
+<h4 id="3verify-dependencies">3.Verify Dependencies</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">rvm requirements run</code></pre></figure>
+
+<h4 id="4ruby-22-설치">4.ruby 2.2 설치</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">rvm install ruby-2.2.5</code></pre></figure>
+
+<h4 id="5기본-루비버전-설정">5.기본 루비버전 설정</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">rvm use 2.2.5 <span class="nt">--default</span></code></pre></figure>
+
+<h4 id="6루비-버전체크">6.루비 버전체크</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">ruby <span class="nt">--version</span>
+
+ruby 2.2.5p319 <span class="o">(</span>2016-04-26 revision 54774<span class="o">)</span> <span class="o">[</span>x86_64-linux]</code></pre></figure>
+
+<h4 id="7파이썬-nodejs-설치">7.파이썬, nodejs 설치</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">yum install <span class="nt">-y</span> python nodejs</code></pre></figure>
+
+<h4 id="8jekyll-설치및-talegit-clone">8.jekyll 설치및 tale.git clone</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">gem install jekyll
+gem install bundler
+<span class="nb">cd</span> /home
+git clone https://github.com/chesterhow/tale.git</code></pre></figure>
+
+<h4 id="9추가플러그인다운로드">9.추가플러그인다운로드</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">cd</span> /home/tale
+gem install jekyll-paginate</code></pre></figure>
+
+<h4 id="10실행">10.실행</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">jekyll serve <span class="nt">-w</span> <span class="nt">-H</span> 1.123.123.123
+
+
+Configuration file: /home/tale/_config.yml
+            Source: /home/tale
+       Destination: /home/tale/_site
+ Incremental build: disabled. Enable with <span class="nt">--incremental</span>
+      Generating...
+                    <span class="k">done in </span>0.767 seconds.
+ Auto-regeneration: enabled <span class="k">for</span> <span class="s1">'/home/tale'</span>
+    Server address: http://1.123.123.123:4000/tale/
+  Server running... press ctrl-c to stop.
+
+
+여기서 <span class="nt">-w</span> 옵션을 주면 
+/home/tale/_posts/<span class="k">*</span>.md 파일이 변경될때마다 바로바로 웹페이지에 적용되는것을 확인할수있다.</code></pre></figure>
+
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2017-12-26/innodb-buffer-pull" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2017-11-02/puppeteer-non-zero-exit-code" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; hoyeon. <time datetime="2018-10-15 16:00:06 +0900">2018</time>
+      </span>
+    </footer>
+  </body>
+</html>

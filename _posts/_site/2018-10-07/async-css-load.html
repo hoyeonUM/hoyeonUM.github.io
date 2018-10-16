@@ -1,0 +1,27 @@
+<p>layout: post
+title: “css aysnc load”
+author: “hoyeonUm”
+—</p>
+
+<p>어느날 웹페이지로딩이 느리다.
+확인해해보니까 css 로드될때까지 화면이 로딩이 되지않는다.
+이유를 찾아보니 다음과 같은 이유가 있다.</p>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">CSS 가 로드되기 전에 스타일 없이 페이지가 로드 되는경우가 있다.
+이런 경우를 FOUC(Flash Of Unstyled Content) 라고 부른다고 한다. 이를 다루기 위한 방법은
+<span class="sb">`rel="stylesheet"`</span> 방식을 사용하여 페이지 렌더링 차단으로 로드한다.
+DOM 렌더링 및 JavaScript 실행은 모든 렌더링 차단 <span class="sb">`rel="stylesheet"`</span> 리소스가 로드되고 CSSOM (CSS Object Model) 로 변환된다고 한다. </code></pre></figure>
+
+<p><a href="https://ko.wikipedia.org/wiki/FOUC">FOUC</a>
+<a href="https://developers.google.com/web/fundamentals/performance/critical-rendering-path/constructing-the-object-model?hl=ko">chrome 렌더링 과정</a></p>
+
+<p>따라서 다음과 같이 처리를 진행했다</p>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown"><span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"preload"</span> <span class="na">href=</span><span class="s">"test.css"</span> <span class="na">as=</span><span class="s">"style"</span> <span class="na">onload=</span><span class="s">"this.rel='stylesheet'"</span><span class="nt">&gt;</span></code></pre></figure>
+
+<p>우선순위를 지정하는 방식이지만 rel 옵션이 preload 로 변경되면서 페이지 렌더링 차단이 해제 되고 로딩이 완료 되면서 다시 stylesheet 로 변환되면서
+FOUC 를 발생시킨다.</p>
+
+<p>다음과 같이 구현시 현재버전(69.0.3497.100) 크롬에서 정상 동작하지만 파이어폭스 에서는 동작하지않는다.
+<a href="https://www.filamentgroup.com/lab/async-css.html">preload 구현</a>
+<a href="https://github.com/filamentgroup/loadCSS">loadCSS</a> 를 사용함으로써 크롬 이외에 브라우저에서도 지원되는걸로 보인다.</p>

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      mysql 을 두개 설치해보자 &middot; note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127067628-1"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127067628-1');
+  </script>
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        Chester
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2017-11-01 00:00:00 +0900">November 01, 2017</time>
+    
+  </div>
+
+  <h1 class="post-title">mysql 을 두개 설치해보자</h1>
+  <div class="post-line"></div>
+
+  <p>현재 mysql5.5 -&gt; maria10.2 설치하기에 앞서 리눅스 피시에 maria10.2 설치를 해야하는 상황이 왔다.
+다른 가상서버 혹은 docker 로 설치진행해도 되지만 옮겨야하는 데이터디렉토리 용량이 800g가 넘기때문에 그냥 리눅스 피시에 설치를 진행하도록 하겠다.</p>
+
+<p>소스코드 설치로 진행한다.</p>
+
+<h4 id="1컴파일을-하기위한-라이브러리-설치">1.컴파일을 하기위한 라이브러리 설치</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">yum install cmake ncurses ncurses-devel bison gcc gcc-c++ <span class="nt">-y</span></code></pre></figure>
+
+<h4 id="2source-code-를-다운로드한다">2.source code 를 다운로드한다.</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">cd</span> /usr/local/src
+wget <span class="nt">-N</span> https://downloads.mariadb.org/interstitial/mariadb-10.2.7/source/mariadb-10.2.7.tar.gz
+<span class="nb">tar </span>zxvf mariadb-10.2.7.tar.gz
+mkdir build
+<span class="nb">cd </span>build</code></pre></figure>
+
+<h4 id="3compile">3.compile</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"> cmake ../mariadb-10.2.7 <span class="nt">-DWITH_READLINE</span><span class="o">=</span>1 <span class="nt">-DWITH_READLINE</span><span class="o">=</span>1 <span class="nt">-DWITH_SSL</span><span class="o">=</span>bundled <span class="nt">-DWITH_ZLIB</span><span class="o">=</span>system <span class="nt">-DDEFAULT_CHARSET</span><span class="o">=</span>utf8 <span class="nt">-DDEFAULT_COLLATION</span><span class="o">=</span>utf8_general_ci <span class="nt">-DENABLED_LOCAL_INFILE</span><span class="o">=</span>1 <span class="nt">-DWITH_EXTRA_CHARSETS</span><span class="o">=</span>all <span class="nt">-DWITH_ARIA_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_XTRADB_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_ARCHIVE_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_INNOBASE_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_PARTITION_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_BLACKHOLE_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_FEDERATEDX_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DWITH_PERFSCHEMA_STORAGE_ENGINE</span><span class="o">=</span>1 <span class="nt">-DCMAKE_INSTALL_PREFIX</span><span class="o">=</span>/usr/local/mariadb-10.2.7 <span class="nt">-DMYSQL_DATADIR</span><span class="o">=</span>/disk/mysql10.2.7</code></pre></figure>
+
+<h4 id="4setup">4.setup</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">make <span class="p">;</span> make install </code></pre></figure>
+
+<h4 id="5설정파일-복사">5.설정파일 복사</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">cp /usr/local/mariadb-10.2.7/support-files/my-innodb-heavy-4G.cnf /etc/sql.cnf</code></pre></figure>
+
+<h4 id="6계정추가는전버전에서--이미-만들었으므로-생략">6.계정추가는전버전에서  이미 만들었으므로 생략</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">adduser mysql</code></pre></figure>
+
+<h4 id="7alias-설정">7.alias 설정</h4>
+
+<figure class="highlight"><pre><code class="language-sehll" data-lang="sehll">alias maria10.2start='/usr/local/mariadb-10.2.7/bin/mysqld_safe --defaults-file=/etc/sql.cnf &amp;'
+alias maria10.2='mysql --defaults-file=/etc/sql.cnf -uroot -p'</code></pre></figure>
+
+<h4 id="8바로적용">8.바로적용</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell"><span class="nb">source</span> ~/.bashrc</code></pre></figure>
+
+<h4 id="참조링크--centos-64bit-mariadb-10-소스-컴파일-설치하기">참조링크 : <a href="http://88oy.tistory.com/383">CentOS 64Bit MariaDB 10 소스 컴파일 설치하기</a></h4>
+
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2017-11-02/puppeteer-non-zero-exit-code" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2016-09-01/php-mkdir-chmod" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; hoyeon. <time datetime="2018-10-15 16:00:06 +0900">2018</time>
+      </span>
+    </footer>
+  </body>
+</html>

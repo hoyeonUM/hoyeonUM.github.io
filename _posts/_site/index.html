@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127067628-1"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127067628-1');
+  </script>
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="catalogue">
+  
+    <a href="/2018-10-07/async-css-load" class="catalogue-item">
+      <div>
+        <time datetime="2018-10-07 00:00:00 +0900" class="catalogue-time">October 07, 2018</time>
+        <h1 class="catalogue-title">Async Css Load</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          layout: post title: “css aysnc load” author: “hoyeonUm” — 어느날 웹페이지로딩이 느리다. 확인해해보니까 css 로드될때까지 화면이 로딩이 되지않는다. 이유를 찾아보니 다음과 같은 이유가 있다. CSS 가 로드되기...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2018-10-01/wireshark-example" class="catalogue-item">
+      <div>
+        <time datetime="2018-10-01 00:00:00 +0900" class="catalogue-time">October 01, 2018</time>
+        <h1 class="catalogue-title">tcpdump 와 wireshark 를 이용해 디버깅 하기</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          서버를 운영하다보면 A 서버에서 B 서버로 API 를 호출하는데 기대값이 아닌 엉뚱한 값이 나오는 경우가 있다. 보통 이경우에는 A 서버의 application layer 에서 input 값을 변환하기 때문에 실제로 B 서버에...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2018-09-19/transcompile-jvascipt" class="catalogue-item">
+      <div>
+        <time datetime="2018-09-19 00:00:00 +0900" class="catalogue-time">September 19, 2018</time>
+        <h1 class="catalogue-title">JavaScript Transcompile 을 진행해보자</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          예전 진행한 프로젝트에서 function 을 arrow function 으로 변환하는 도중 다음과 같은코드가 있었다. let someThingObject = { something : 'test'...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2018-08-25/es-vs-javascipt" class="catalogue-item">
+      <div>
+        <time datetime="2018-08-25 00:00:00 +0900" class="catalogue-time">August 25, 2018</time>
+        <h1 class="catalogue-title">ECMAScript vs JavaScript</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          ECMAScript ECMA International에 의해 표준화되고 TC39위원회가 감독하는 언어. 이 용어는 일반적으로 표준 자체를 지칭하기 위해 사용됨 JavaScript ECMAScript 표준 구현에 일반적으로 사용되는...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2018-08-24/php-check-korean" class="catalogue-item">
+      <div>
+        <time datetime="2018-08-24 00:00:00 +0900" class="catalogue-time">August 24, 2018</time>
+        <h1 class="catalogue-title">php 에서 한글포함 여부를 체크해보자</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          1. 환경체크 php -v PHP 7.2.9 (cli) (built: Aug 15 2018 08:05:45) ( NTS ) Copyright (c)...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2018-08-17/php-redis" class="catalogue-item">
+      <div>
+        <time datetime="2018-08-17 00:00:00 +0900" class="catalogue-time">August 17, 2018</time>
+        <h1 class="catalogue-title">PHP redis 연동</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          설치 yum install redis systemctl start redis cd ./workspace composer require chrisboulton/php-resque github Push.php \Resque::setBackend('localhost:6379'<span...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2018-07-30/big-size-excel-on-php" class="catalogue-item">
+      <div>
+        <time datetime="2018-07-30 00:00:00 +0900" class="catalogue-time">July 30, 2018</time>
+        <h1 class="catalogue-title">PHP 대용량 엑셀다운로드</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          소개 300 백만건 이상의 엑셀 다운로드 파일 요청이 들어와서 기능을 검토하던 도중 다운로드 크기가 200MB 를 넘어 버리는 현상이 발생해 서버 설정에 잡아둔 메모리를 초과하는 현상이...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2018-07-27/crontab-every-second" class="catalogue-item">
+      <div>
+        <time datetime="2018-07-27 00:00:00 +0900" class="catalogue-time">July 27, 2018</time>
+        <h1 class="catalogue-title">node를 사용한 초단위 cron 설정을 진행해보자</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          환경체크 #노드와 npm 설치 진행 node -v v8.9.3 npm -v 6.4.0 crontab 설치 cd /home/crontab #https://www.npmjs.com/package/cron npm...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2018-06-26/mongodb-docker-compose" class="catalogue-item">
+      <div>
+        <time datetime="2018-06-26 00:00:00 +0900" class="catalogue-time">June 26, 2018</time>
+        <h1 class="catalogue-title">MongoDB 를 docker로 세팅해보자</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          몽고디비를 로컬환경에 설치를 해야하는데 라우트서버와 샤드서버 콘피그서버를 설치하려니까 이것저것 해야할 부분들이 너무많아서 docker 로 설치하는 방법이 제일 빠를거 같아 docker 를 올려보았다. 기본 세팅 <code...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2018-03-05/mariadb-connectedby" class="catalogue-item">
+      <div>
+        <time datetime="2018-03-05 00:00:00 +0900" class="catalogue-time">March 05, 2018</time>
+        <h1 class="catalogue-title">mariadb 에서 connected by 를 써보자!</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          oracle 에서 사용할수있는 connect by 가 mariadb 10.2 버전이후로부터는 아래와 같이 지원된다. 1. 테이블 생성 CREATE TABLE `menu` ( `idx`...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2017-12-26/innodb-buffer-pull" class="catalogue-item">
+      <div>
+        <time datetime="2017-12-26 00:00:00 +0900" class="catalogue-time">December 26, 2017</time>
+        <h1 class="catalogue-title">Inoodb buffer pool 이란 ?</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          'mysql' innodb buffer pool 설정에 관해서 알아보자. 현재 내가 맡고 있는 업무는 사내프로젝트 유지보수를 하고있다. 문제가있는 테이블은 현재 정규화가 되어있지 않으며, 컬럼수는 약 100개 정도, 약...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2017-12-26/github-page-jekyll-setup" class="catalogue-item">
+      <div>
+        <time datetime="2017-12-26 00:00:00 +0900" class="catalogue-time">December 26, 2017</time>
+        <h1 class="catalogue-title">github 블로그를 jekyll 를 통해 관리해보자</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          환경 centos7 1.필수패키지 설치 yum install gcc-c++ patch readline readline-devel zlib zlib-devel yum install libyaml-devel libffi-devel openssl-devel make yum install bzip2 autoconf automake libtool bison...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2017-11-02/puppeteer-non-zero-exit-code" class="catalogue-item">
+      <div>
+        <time datetime="2017-11-02 00:00:00 +0900" class="catalogue-time">November 02, 2017</time>
+        <h1 class="catalogue-title">puppeteer the Node.js process with a non-zero exit code</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          Lazy loading 싸이트를 긁어오기위해 요즘 핫하다는 puppeteer 를 사용해보고자 설치했다. 내 개발환경은 현재 윈도우와 리눅스 혹은 vagrant 등 여러환경을 가지고있지만, 프로젝트가 윈도우에 설치되어있어서 윈도우로 개발시작 윈도우에 잘 설치한 이후 테스트를...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2017-11-01/another-version-mariadbe" class="catalogue-item">
+      <div>
+        <time datetime="2017-11-01 00:00:00 +0900" class="catalogue-time">November 01, 2017</time>
+        <h1 class="catalogue-title">mysql 을 두개 설치해보자</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          현재 mysql5.5 -&gt; maria10.2 설치하기에 앞서 리눅스 피시에 maria10.2 설치를 해야하는 상황이 왔다. 다른 가상서버 혹은 docker 로 설치진행해도 되지만 옮겨야하는 데이터디렉토리 용량이 800g가 넘기때문에 그냥 리눅스 피시에 설치를 진행하도록...
+        </p>
+
+      </div>
+    </a>
+  
+    <a href="/2016-09-01/php-mkdir-chmod" class="catalogue-item">
+      <div>
+        <time datetime="2016-09-01 00:00:00 +0900" class="catalogue-time">September 01, 2016</time>
+        <h1 class="catalogue-title">PHP mkdir 권한 문제(umask)</h1>
+        <div class="catalogue-line"></div>
+
+        <p>
+          파일 업로드 관련 코드를 작성하던 도중 다음과 같은 코드가 있었다. $path = '/home/test/tmp'; if (is_dir($path) ===...
+        </p>
+
+      </div>
+    </a>
+  
+</div>
+
+<div class="pagination">
+  
+  
+
+  <span>1</span>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; hoyeon. <time datetime="2018-10-15 16:00:06 +0900">2018</time>
+      </span>
+    </footer>
+  </body>
+</html>

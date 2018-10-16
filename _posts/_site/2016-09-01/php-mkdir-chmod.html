@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      PHP mkdir 권한 문제(umask) &middot; note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127067628-1"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127067628-1');
+  </script>
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        hoyeonUm
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2016-09-01 00:00:00 +0900">September 01, 2016</time>
+    
+  </div>
+
+  <h1 class="post-title">PHP mkdir 권한 문제(umask)</h1>
+  <div class="post-line"></div>
+
+  <p>파일 업로드 관련 코드를 작성하던 도중 다음과 같은 코드가 있었다.</p>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="nv">$path</span> <span class="o">=</span> <span class="s1">'/home/test/tmp'</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="nb">is_dir</span><span class="p">(</span><span class="nv">$path</span><span class="p">)</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">mkdir</span><span class="p">(</span><span class="nv">$path</span><span class="p">,</span> <span class="mo">0777</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>위 코드에서 보면 만들고자 하는 디렉토리는 /home/test/tmp 라는 디렉토리이고 recursive 옵션을 true 로 주어서 test 폴더와 tmp 폴더가 만들어지는고 test 와 tmp 폴더의 권한은 777 옵션이 적용되어있는 것을 기대 하였다.</p>
+
+<p>하지만 만들어진 디렉토리를 보니 권한이 755 로 잡혀잇는것이다.</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="nb">ls</span> <span class="nt">-al</span> |grep test_dir
+drwxr-xr-x   3 root   root    4096 9월  2 11:11 test_dir</code></pre></figure>
+
+<p>원인을 찾던도중 다음과 같은 원인을 찾을수 있었다.</p>
+
+<h5 id="umask">umask</h5>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">umask 란 ? 권한을 설정할 때 수동적으로 권한을 주지 않고 파일이나 디렉토리가 생성됨가 동시에 지정된 권한이 주어주도록 함.
+
+현재 리눅스PC umask 설정값이 0022 로 잡혀있어서 0777 디렉토리를 생성하고자 할때
+0777 - 0022 = 0755
+다음과 같은 결과값이 나왔던 것이다.</code></pre></figure>
+
+<p>이를 코드상에서 0777 의 옵션으로 변경하고자 하면 아래와 같이 코드를 수정하면된다.</p>
+
+<figure class="highlight"><pre><code class="language-php" data-lang="php"><span class="nv">$oldumask</span> <span class="o">=</span> <span class="nb">umask</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="nv">$path</span> <span class="o">=</span> <span class="s1">'/home/test/tmp'</span><span class="p">;</span>
+<span class="k">if</span> <span class="p">(</span><span class="nb">is_dir</span><span class="p">(</span><span class="nv">$path</span><span class="p">)</span> <span class="o">===</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">mkdir</span><span class="p">(</span><span class="nv">$path</span><span class="p">,</span> <span class="mo">0777</span><span class="p">,</span> <span class="kc">true</span><span class="p">);</span>
+<span class="p">}</span>
+<span class="nb">umask</span><span class="p">(</span><span class="nv">$oldumask</span><span class="p">);</span></code></pre></figure>
+
+<p><a href="https://stackoverflow.com/questions/3997641/why-cant-php-create-a-directory-with-777-permissions">링크</a></p>
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2017-11-01/another-version-mariadbe" class="left arrow">&#8592;</a>
+  
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; hoyeon. <time datetime="2018-10-15 16:00:06 +0900">2018</time>
+      </span>
+    </footer>
+  </body>
+</html>

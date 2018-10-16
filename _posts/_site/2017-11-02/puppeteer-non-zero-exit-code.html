@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      puppeteer the Node.js process with a non-zero exit code &middot; note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127067628-1"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127067628-1');
+  </script>
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        hoyeonUm
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2017-11-02 00:00:00 +0900">November 02, 2017</time>
+    
+  </div>
+
+  <h1 class="post-title">puppeteer the Node.js process with a non-zero exit code</h1>
+  <div class="post-line"></div>
+
+  <p>Lazy loading 싸이트를 긁어오기위해 요즘 핫하다는 puppeteer 를 사용해보고자 설치했다.
+내 개발환경은 현재 윈도우와 리눅스 혹은 vagrant 등 여러환경을 가지고있지만, 프로젝트가 윈도우에 설치되어있어서 윈도우로 개발시작</p>
+
+<p>윈도우에 잘 설치한 이후 테스트를 끝낸이후 QA 서버 (centos) 환경에 배포완료.</p>
+
+<h4 id="실행명령어">실행명령어</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">./node_modules/puppeteer/.local-chromium/linux-508693/chrome-linux/chrome <span class="nt">-v</span> <span class="nt">--headless</span> <span class="nt">--no-sandbox</span> <span class="nt">--disable-setuid-sandbox</span></code></pre></figure>
+
+<h4 id="오류발생">오류발생</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">puppeteer the Node.js process with a non-zero <span class="nb">exit </span>code.</code></pre></figure>
+
+<h4 id="해결">해결</h4>
+
+<figure class="highlight"><pre><code class="language-shell" data-lang="shell">yum install <span class="nt">-y</span> nss
+
+yum install ipa-gothic-fonts xorg-x11-fonts-100dpi xorg-x11-fonts-75dpi xorg-x11-utils xorg-x11-fonts-cyrillic xorg-x11-fonts-Type1 xorg-x11-fonts-misc <span class="nt">-y</span>
+
+yum install pango.x86_64 libXcomposite.x86_64 libXcursor.x86_64 libXdamage.x86_64 libXext.x86_64 libXi.x86_64 libXtst.x86_64 cups-libs.x86_64 libXScrnSaver.x86_64 libXrand
+r.x86_64 GConf2.x86_64 alsa-lib.x86_64 atk.x86_64 gtk3.x86_64 <span class="nt">-y</span></code></pre></figure>
+
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2017-12-26/github-page-jekyll-setup" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2017-11-01/another-version-mariadbe" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; hoyeon. <time datetime="2018-10-15 16:00:06 +0900">2018</time>
+      </span>
+    </footer>
+  </body>
+</html>

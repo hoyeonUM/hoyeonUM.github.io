@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>
+    
+      tcpdump 와 wireshark 를 이용해 디버깅 하기 &middot; note
+    
+  </title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400i,700">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127067628-1"></script>
+	<script>
+		  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-127067628-1');
+  </script>
+</head>
+
+
+  <body>
+    <nav class="nav">
+      <div class="nav-container">
+        <a href="/">
+          <h2 class="nav-title">note</h2>
+        </a>
+        <ul>
+	<!--<li><a href="/about">About</a></li>-->
+          <li><a href="/">Posts</a></li>
+        </ul>
+    </div>
+  </nav>
+
+    <main>
+      <div class="post">
+  <div class="post-info">
+    <span>Written by</span>
+    
+        hoyeonUm
+    
+
+    
+      <br>
+      <span>on&nbsp;</span><time datetime="2018-10-01 00:00:00 +0900">October 01, 2018</time>
+    
+  </div>
+
+  <h1 class="post-title">tcpdump 와 wireshark 를 이용해 디버깅 하기</h1>
+  <div class="post-line"></div>
+
+  <p>서버를 운영하다보면 A 서버에서 B 서버로 API 를 호출하는데 기대값이 아닌 엉뚱한 값이 나오는 경우가 있다.
+보통 이경우에는 A 서버의 application layer 에서 input 값을 변환하기 때문에 실제로 B 서버에 요청하는 값은 달라질수가 있다.
+이럴때 디버깅을 하기위해서는 디버깅코드를 심어서 배포를 하거나 로그코드를 심어서 배포를 하는경우가 있다.
+이럴때 유용하게 사용할수있는 tcpdump 와 wireshark 를 이용해보자.</p>
+
+<p><code class="highlighter-rouge">단 ssl 적용시 내용 확인 불가하다.</code></p>
+
+<h5 id="tcpdump-설치">tcpdump 설치</h5>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="o">[</span>root@localhost ~]# yum install tcpdump</code></pre></figure>
+
+<h5 id="노드서버-디렉토리생성-및-세팅">노드서버 디렉토리생성 및 세팅</h5>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="p">[</span><span class="nx">root</span><span class="p">@</span><span class="nd">localhost</span> <span class="o">~</span><span class="p">]</span><span class="err">#</span> <span class="nx">mkdir</span> <span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">node</span>
+<span class="p">[</span><span class="nx">root</span><span class="p">@</span><span class="nd">localhost</span> <span class="o">~</span><span class="p">]</span><span class="err">#</span> <span class="nx">cd</span> <span class="o">/</span><span class="nx">home</span><span class="o">/</span><span class="nx">node</span>
+<span class="p">[</span><span class="nx">root</span><span class="p">@</span><span class="nd">localhost</span> <span class="o">~</span><span class="p">]</span><span class="err">#</span> <span class="nx">vim</span> <span class="p">.</span><span class="o">/</span><span class="nx">A_server</span><span class="p">.</span><span class="nx">js</span>
+
+<span class="kd">let</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'http'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'url'</span><span class="p">);</span>
+
+<span class="kd">function</span> <span class="nx">randomIntFromInterval</span><span class="p">(</span><span class="nx">min</span><span class="p">,</span><span class="nx">max</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="nb">Math</span><span class="p">.</span><span class="nx">floor</span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span><span class="o">*</span><span class="p">(</span><span class="nx">max</span><span class="o">-</span><span class="nx">min</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="nx">min</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">urlObj</span> <span class="o">=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+  <span class="c1">//가공</span>
+  <span class="k">if</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">urlObj</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">param</span> <span class="o">===</span> <span class="s1">'undefined'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">error</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="na">code</span> <span class="p">:</span> <span class="mi">422</span><span class="p">,</span>
+      <span class="na">message</span> <span class="p">:</span> <span class="s1">'require </span><span class="se">\'</span><span class="s1">param</span><span class="se">\'</span><span class="s1"> in query string'</span>
+    <span class="p">}</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">error</span><span class="p">));</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+  <span class="kd">let</span> <span class="nx">paramLen</span> <span class="o">=</span> <span class="nx">urlObj</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">param</span><span class="p">.</span><span class="nx">length</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+  <span class="kd">let</span> <span class="nx">data</span> <span class="o">=</span> <span class="nx">urlObj</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">param</span><span class="p">.</span><span class="nx">substring</span><span class="p">(</span><span class="nx">randomIntFromInterval</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nx">paramLen</span><span class="p">));</span>
+  <span class="nx">http</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="s1">'http://127.0.0.1:8081/?data='</span><span class="o">+</span><span class="nx">data</span><span class="p">,</span> <span class="p">(</span><span class="nx">resp</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">data</span> <span class="o">=</span> <span class="s1">''</span><span class="p">;</span>
+    <span class="nx">resp</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'data'</span><span class="p">,</span> <span class="p">(</span><span class="nx">chunk</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">data</span> <span class="o">+=</span> <span class="nx">chunk</span><span class="p">;</span>
+    <span class="p">});</span>
+    <span class="nx">resp</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">'end'</span><span class="p">,</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="nx">res</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+      <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">});</span>
+<span class="p">}).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8080</span><span class="p">);</span>
+
+
+<span class="p">[</span><span class="nx">root</span><span class="p">@</span><span class="nd">localhost</span> <span class="o">~</span><span class="p">]</span><span class="err">#</span> <span class="nx">vim</span> <span class="p">.</span><span class="o">/</span><span class="nx">B_server</span><span class="p">.</span><span class="nx">js</span>
+
+<span class="kd">let</span> <span class="nx">http</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'http'</span><span class="p">);</span>
+<span class="kd">let</span> <span class="nx">url</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'url'</span><span class="p">);</span>
+
+
+<span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">(</span><span class="k">async</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">req</span><span class="p">,</span> <span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">urlObj</span> <span class="o">=</span> <span class="nx">url</span><span class="p">.</span><span class="nx">parse</span><span class="p">(</span><span class="nx">req</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="kc">true</span><span class="p">,</span> <span class="kc">false</span><span class="p">);</span>
+  <span class="c1">//가공</span>
+  <span class="k">if</span><span class="p">(</span><span class="k">typeof</span> <span class="nx">urlObj</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">data</span> <span class="o">===</span> <span class="s1">'undefined'</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">error</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="na">code</span> <span class="p">:</span> <span class="mi">422</span><span class="p">,</span>
+      <span class="na">message</span> <span class="p">:</span> <span class="s1">'require </span><span class="se">\'</span><span class="s1">data</span><span class="se">\'</span><span class="s1"> in query string'</span>
+    <span class="p">}</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">error</span><span class="p">));</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kd">let</span> <span class="nx">dataLen</span> <span class="o">=</span> <span class="nx">urlObj</span><span class="p">.</span><span class="nx">query</span><span class="p">.</span><span class="nx">data</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">dataLen</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">let</span> <span class="nx">error</span> <span class="o">=</span> <span class="p">{</span>
+      <span class="na">code</span> <span class="p">:</span> <span class="mi">422</span><span class="p">,</span>
+      <span class="na">message</span> <span class="p">:</span> <span class="s1">'error'</span>
+    <span class="p">}</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">error</span><span class="p">));</span>
+    <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
+
+  <span class="kd">let</span> <span class="nx">response</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">code</span> <span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+    <span class="na">message</span> <span class="p">:</span> <span class="s1">'success'</span>
+  <span class="p">};</span>
+
+  <span class="nx">res</span><span class="p">.</span><span class="nx">write</span><span class="p">(</span><span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">response</span><span class="p">));</span>
+  <span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">();</span>
+<span class="p">}).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8081</span><span class="p">);</span></code></pre></figure>
+
+<p>위와 같이 서버 2개를 임의로 만든후 호출을 진행하면 아래 두가지의 랜덤 메세지를 받을수있다.
+하지만 코드에는 디버깅 할수있는 코드가 없어서 어떨때 에러가 나는지 확인하기가 어렵다.
+이럴때 tcpdump 를 사용해보자</p>
+
+<h5 id="sample">sample</h5>
+
+<figure class="highlight"><pre><code class="language-js" data-lang="js"><span class="nx">curl</span> <span class="o">-</span><span class="nx">k</span> <span class="nx">http</span><span class="p">:</span><span class="c1">//127.0.0.1:8080/?param=sendParam</span>
+
+<span class="p">{</span>
+<span class="nl">code</span><span class="p">:</span> <span class="mi">422</span><span class="p">,</span>
+<span class="nx">message</span><span class="p">:</span> <span class="s2">"error"</span>
+<span class="p">}</span>
+
+<span class="p">{</span>
+<span class="nl">code</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+<span class="nx">message</span><span class="p">:</span> <span class="s2">"success"</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>아래는 노드서버 두대를 실행시키고 tcpdump 로 패킷캡처를 진행한다음에 윈도우 피시로 가저오는 샘플이다.</p>
+
+<figure class="highlight"><pre><code class="language-sh" data-lang="sh"><span class="c">#서버를 띄운다.</span>
+<span class="o">[</span>root@localhost node]#node A_server.js
+<span class="o">[</span>root@localhost node]#node B_server.js
+
+<span class="c">#tcpdump 실행</span>
+<span class="c">#로컬호스트에서 로컬호스트로 가는경우에는 이더넷인터페이스 를 lo 로 지정해줘야한다.</span>
+tcpdump <span class="nt">-i</span> lo port 8080 or port 8081 <span class="nt">-w</span> dump.pcap
+
+
+<span class="c">#5번정도 실행시켜준다.</span>
+curl <span class="nt">-k</span> http://127.0.0.1:8080/?param<span class="o">=</span>sendParam
+curl <span class="nt">-k</span> http://127.0.0.1:8080/?param<span class="o">=</span>sendParam
+curl <span class="nt">-k</span> http://127.0.0.1:8080/?param<span class="o">=</span>sendParam
+curl <span class="nt">-k</span> http://127.0.0.1:8080/?param<span class="o">=</span>sendParam
+curl <span class="nt">-k</span> http://127.0.0.1:8080/?param<span class="o">=</span>sendParam
+
+<span class="c">#Ctrl+c 로 tcpdum 종료</span>
+
+<span class="c">#sz 로 윈도우피시로 dump 한걸 가져온다.</span>
+sz dump.pcap</code></pre></figure>
+
+<h5 id="확인방법">확인방법</h5>
+
+<figure class="highlight"><pre><code class="language-markdown" data-lang="markdown">윈도우 환경 피시를 가지고 있기떄문에 윈도우에서 설치를 진행한다.
+전부 next 로 눌러 설치를 진행.
+
+더블클릭을하면 화면에 리스트가 나온다.
+시간정렬을 클릭한후 리스트를 살펴보면 GET /?param=sendParam 이라고 보낸 데이터가있다.
+아래로 내려가보면 ?data=am 이라고 보낸 HTTP 프로토콜을 확인할수있다. 
+데이터가 어떤 형식으로 바뀌어서 넘어갔는지 데이터 송수신이 잘됬는지를 확인할수있다.</code></pre></figure>
+
+<p><a href="https://www.wireshark.org/download.html">다운로드 링크</a></p>
+
+
+</div>
+
+<div class="pagination">
+  
+    <a href="/2018-10-07/async-css-load" class="left arrow">&#8592;</a>
+  
+  
+    <a href="/2018-09-19/transcompile-jvascipt" class="right arrow">&#8594;</a>
+  
+
+  <a href="#" class="top">Top</a>
+</div>
+
+    </main>
+
+    <footer>
+      <span>
+        &copy; hoyeon. <time datetime="2018-10-15 16:00:06 +0900">2018</time>
+      </span>
+    </footer>
+  </body>
+</html>
