@@ -73,6 +73,7 @@ Max_memory =
 {% endhighlight %}
 
 [메모리 계산](http://intomysql.blogspot.com/2010/12/mysql_9509.html)
+[메모리 계산 2](http://code-factory.tistory.com/m/41)
 
 [버퍼풀 인스턴스 이슈](https://blog.jcole.us/2010/09/28/mysql-swap-insanity-and-the-numa-architecture/)
 
