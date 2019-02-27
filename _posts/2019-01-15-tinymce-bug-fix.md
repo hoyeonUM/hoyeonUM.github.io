@@ -13,7 +13,7 @@ author: "hoyeonUm"
 다음과 같은 코드가 있었다.
 근데 컨텐츠안에 내용이 a 태그의 href 로 링크가 걸려있는 내용이 있었는데 read only 옵션을 줬을때 클릭시 아무런 반응도 하지않는것이다.
 
-
+#### 해결
 {% highlight html%}
 <template>
   <div>

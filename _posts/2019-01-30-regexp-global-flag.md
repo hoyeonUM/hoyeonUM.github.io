@@ -6,7 +6,7 @@ author: "hoyeonUm"
 
 
 #### 사건의시작
-{% highlight html%}
+{% highlight js%}
 let pattern = /[,';"\\]|(#\$%)/gi;
 if(pattern.test(text)) {
   ..
@@ -16,7 +16,7 @@ if(pattern.test(text)) {
 위와같은 정규표현식이있어서 해당 정규표현식에 걸리면 중단되는 코드였다.
 딱히 i (대소문자 구별) 과 g (global match) 를 의식해서 넣은건 아니지만 기존 정규표현식에 추가하다보니 의식하지 않고 다음패턴을 추가하려고했다.
 
-{% highlight html%}
+{% highlight js%}
 let pattern = /[,';"\\]|(#\$%)/gi;
 console.log(pattern.test('안녕;')); // true
 console.log(pattern.test('안녕;')); // false
@@ -30,8 +30,8 @@ console.log(pattern.test('안녕;')); // false
 RegExp는 일치항목이 발생한 마지막 인덱스를 추가한다.
 따라서 이후 매치에서는 0이 아닌 마지막에 사용된 인덱스부터 찾아서 시작한다.
 
-
-{% highlight html%}
+#### 해결
+{% highlight js%}
 let pattern = /[,';"\\]|(#\$%)/gi;
 console.log(pattern.test('안녕;')); // true
 console.log(pattern.lastIndex); //3
