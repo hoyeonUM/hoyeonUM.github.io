@@ -1,7 +1,7 @@
 {
-  "name": "Lichter.io",
-  "short_name": "Lichter.io",
-  "description": "The personal website and online CV of Alexander Lichter, a passionate developer",
+  "name": "",
+  "short_name": "",
+  "description": "[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)\r [![thanks](https://img.shields.io/badge/thanks-%E2%99%A5-ff69b4.svg)](https://thanks.lichter.io/)",
   "icons": [
     {
       "src": "/pf/assets/icons/icon_64x64.2b34f6.png",
