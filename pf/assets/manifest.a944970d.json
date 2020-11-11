@@ -1,0 +1,52 @@
+{
+  "name": "Lichter.io",
+  "short_name": "Lichter.io",
+  "description": "The personal website and online CV of Alexander Lichter, a passionate developer",
+  "icons": [
+    {
+      "src": "/pf/assets/icons/icon_64x64.2b34f6.png",
+      "sizes": "64x64",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pf/assets/icons/icon_120x120.2b34f6.png",
+      "sizes": "120x120",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pf/assets/icons/icon_144x144.2b34f6.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pf/assets/icons/icon_152x152.2b34f6.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pf/assets/icons/icon_192x192.2b34f6.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pf/assets/icons/icon_384x384.2b34f6.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/pf/assets/icons/icon_512x512.2b34f6.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "lang": "en"
+}
